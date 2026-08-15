@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parent Portal | Kalinabiri SS</title>
+    <link rel="icon" type="image/x-icon" href="/assets/images/logo.ico">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --primary: #0a1f0a; --primary-light: #122412; --accent: #4ade80; --accent-dark: #22c55e;
+            --bg: #0d1a0d; --bg-card: #142814; --bg-hover: #1a3a1a; --text: #e8f5e8; --text-muted: #8ba88b;
+            --border: #2a4a2a; --danger: #ef4444; --warning: #f59e0b; --success: #22c55e; --info: #3b82f6;
+            --sidebar-width: 280px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+        a { color: var(--accent); text-decoration: none; }
+        button { cursor: pointer; font-family: inherit; }
+        input, select, textarea { font-family: inherit; }
+        .hidden { display: none !important; }
+        .text-muted { color: var(--text-muted); }
+        .text-sm { font-size: 13px; }
+        .flex { display: flex; } .items-center { align-items: center; } .justify-between { justify-content: space-between; }
+        .gap-2 { gap: 8px; } .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .mt-4 { margin-top: 16px; }
+
+        .login-screen { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+        .login-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 48px; width: 100%; max-width: 420px; }
+        .login-logo { text-align: center; margin-bottom: 32px; }
+        .login-logo .icon { font-size: 48px; color: var(--accent); margin-bottom: 12px; }
+        .login-logo h1 { font-size: 28px; font-weight: 700; color: var(--accent); margin-bottom: 8px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-size: 14px; color: var(--text-muted); }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px 16px; background: var(--primary); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 14px; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--accent); }
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 24px; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; }
+        .btn-primary { background: var(--accent); color: var(--primary); }
+        .btn-primary:hover { background: var(--accent-dark); }
+        .btn-secondary { background: var(--bg-hover); color: var(--text); border: 1px solid var(--border); }
+        .btn-sm { padding: 8px 16px; font-size: 13px; }
+        .btn-block { width: 100%; }
+
+        .app-layout { display: flex; min-height: 100vh; }
+        .sidebar { width: var(--sidebar-width); background: var(--primary); border-right: 1px solid var(--border); position: fixed; height: 100vh; display: flex; flex-direction: column; z-index: 100; }
+        .sidebar-header { padding: 24px 20px; border-bottom: 1px solid var(--border); }
+        .sidebar-logo { font-size: 20px; font-weight: 700; color: var(--accent); display: flex; align-items: center; gap: 10px; }
+        .sidebar-subtitle { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+        .sidebar-nav { flex: 1; padding: 16px 12px; overflow-y: auto; }
+        .nav-section { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; padding: 8px 12px; margin-top: 16px; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px; color: var(--text-muted); font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; margin-bottom: 4px; }
+        .nav-item:hover { background: var(--bg-hover); color: var(--text); }
+        .nav-item.active { background: var(--accent); color: var(--primary); }
+        .nav-item i { width: 20px; text-align: center; }
+        .nav-badge { margin-left: auto; background: var(--danger); color: white; font-size: 10px; font-weight: 600; min-width: 18px; height: 18px; border-radius: 9px; display: flex; align-items: center; justify-content: center; padding: 0 5px; }
+        .sidebar-footer { padding: 16px 12px; border-top: 1px solid var(--border); }
+        .user-info { display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg-card); border-radius: 8px; margin-bottom: 12px; }
+        .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: 600; color: var(--primary); font-size: 16px; }
+        .user-details { flex: 1; min-width: 0; }
+        .user-name { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .user-role { font-size: 12px; color: var(--text-muted); }
+
+        .main-content { flex: 1; margin-left: var(--sidebar-width); display: flex; flex-direction: column; }
+        .topbar { background: var(--primary); border-bottom: 1px solid var(--border); padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
+        .page-title { font-size: 20px; font-weight: 600; }
+        .topbar-actions { display: flex; align-items: center; gap: 16px; }
+        .notification-bell { position: relative; cursor: pointer; padding: 8px; border-radius: 8px; }
+        .notification-bell:hover { background: var(--bg-hover); }
+        .notification-badge { position: absolute; top: 4px; right: 4px; background: var(--danger); color: white; font-size: 10px; font-weight: 600; min-width: 18px; height: 18px; border-radius: 9px; display: flex; align-items: center; justify-content: center; padding: 0 5px; }
+        .notifications-dropdown { position: absolute; top: 100%; right: 0; width: 360px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.4); display: none; z-index: 200; margin-top: 8px; }
+        .notifications-dropdown.show { display: block; }
+        .notifications-header { padding: 16px; border-bottom: 1px solid var(--border); font-weight: 600; }
+        .notification-item { padding: 12px 16px; border-bottom: 1px solid var(--border); }
+        .notification-item:hover { background: var(--bg-hover); }
+        .notification-title { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+        .notification-time { font-size: 12px; color: var(--text-muted); }
+
+        .page-content { flex: 1; padding: 24px; }
+        .page-header { margin-bottom: 24px; }
+        .page-header h2 { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+        .page-header p { color: var(--text-muted); font-size: 14px; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        .stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+        .stat-icon { width: 48px; height: 48px; border-radius: 10px; background: var(--bg-hover); display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
+        .stat-icon i { font-size: 24px; color: var(--accent); }
+        .stat-value { font-size: 32px; font-weight: 700; margin-bottom: 4px; }
+        .stat-label { font-size: 14px; color: var(--text-muted); }
+
+        .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+        .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+        .card-title { font-size: 18px; font-weight: 600; }
+
+        .table-wrapper { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border); }
+        th { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
+        td { font-size: 14px; }
+        tbody tr:hover { background: var(--bg-hover); }
+
+        .badge { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+        .badge-success { background: rgba(74, 222, 128, 0.15); color: var(--accent); }
+        .badge-warning { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+        .badge-danger { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+        .badge-info { background: rgba(59, 130, 246, 0.15); color: var(--info); }
+
+        .children-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+        .child-card { background: var(--primary); border: 1px solid var(--border); border-radius: 10px; padding: 20px; cursor: pointer; transition: all 0.2s; }
+        .child-card:hover { transform: translateY(-2px); border-color: var(--accent); }
+        .child-avatar { width: 60px; height: 60px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; color: var(--primary); margin-bottom: 12px; }
+        .child-name { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+        .child-meta { font-size: 13px; color: var(--text-muted); margin-bottom: 8px; }
+
+        .comm-header { padding: 16px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .comm-body { flex: 1; display: flex; overflow: hidden; }
+        .comm-sidebar { width: 380px; border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
+        .comm-search { padding: 16px; border-bottom: 1px solid var(--border); }
+        .comm-search input { width: 100%; padding: 10px 14px; background: var(--primary); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 14px; }
+        .comm-conversations { flex: 1; overflow-y: auto; }
+        .comm-chat { flex: 1; display: flex; flex-direction: column; background: var(--bg); }
+        .comm-chat-header { padding: 16px 24px; border-bottom: 1px solid var(--border); background: var(--bg-card); }
+        .comm-messages { flex: 1; overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+        .comm-empty { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); text-align: center; padding: 24px; }
+        .comm-input-area { padding: 16px 24px; border-top: 1px solid var(--border); background: var(--bg-card); }
+        .comm-message { display: flex; gap: 8px; max-width: 75%; animation: slideIn 0.2s ease; }
+        .comm-message.own { flex-direction: row-reverse; align-self: flex-end; }
+        .comm-message .avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; flex-shrink: 0; margin-top: 2px; }
+        .comm-message.own .avatar { background: var(--accent); color: var(--primary); }
+        .comm-message:not(.own) .avatar { background: var(--border); color: var(--text-muted); }
+        .comm-message .bubble { background: var(--bg-card); color: var(--text); padding: 10px 14px; border-radius: 18px 18px 18px 4px; }
+        .comm-message.own .bubble { background: var(--accent); color: var(--primary); border-radius: 18px 18px 4px 18px; }
+        .comm-message .bubble .sender { font-size: 11px; font-weight: 500; color: var(--text-muted); margin-bottom: 2px; }
+        .comm-message.own .bubble .sender { color: var(--primary); opacity: 0.7; }
+        .comm-message .bubble .meta { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; font-size: 10px; color: var(--text-muted); }
+        .comm-message.own .bubble .meta { color: var(--primary); opacity: 0.7; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        .toast-container { position: fixed; top: 24px; right: 24px; z-index: 1000; display: flex; flex-direction: column; gap: 12px; }
+        .toast { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.4); display: flex; align-items: center; gap: 12px; min-width: 280px; }
+        .toast.success { border-left: 4px solid var(--success); }
+        .toast.error { border-left: 4px solid var(--danger); }
+        .toast.info { border-left: 4px solid var(--info); }
+        .spinner { width: 24px; height: 24px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-overlay { display: flex; align-items: center; justify-content: center; padding: 32px; }
+        .empty-state { padding: 48px 24px; text-align: center; color: var(--text-muted); }
+        .mobile-toggle { display: none; background: transparent; border: none; color: var(--text); font-size: 20px; padding: 8px; }
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); transition: transform 0.3s; }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+            .mobile-toggle { display: block; }
+        }
+    </style>
+</head>
+<body>
+    <div id="loginScreen" class="login-screen">
+        <div class="login-card">
+            <div class="login-logo">
+                <img src="/assets/images/logo.png" alt="Kalinabiri SS" style="width:64px;height:64px;border-radius:16px;object-fit:cover;border:2px solid var(--accent);margin-bottom:16px;">
+                <h1>Parent Portal</h1>
+                <p>Kalinabiri Secondary School</p>
+            </div>
+            <form id="loginForm">
+                <div class="form-group"><label>Username</label><input type="text" id="loginUsername" required></div>
+                <div class="form-group"><label>Password</label><input type="password" id="loginPassword" required></div>
+                <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-sign-in-alt"></i> Sign In</button>
+                <p id="loginError" class="text-sm" style="color: var(--danger); margin-top: 12px; display: none;"></p>
+            </form>
+        </div>
+    </div>
+
+    <div id="dashboard" class="app-layout hidden">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo"><img src="/assets/images/logo.png" alt="Kalinabiri SS" style="width:32px;height:32px;border-radius:8px;object-fit:cover;margin-right:10px;"> <span>Parent Portal</span></div>
+                <div class="sidebar-subtitle">Kalinabiri SS</div>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-item active" data-page="overview"><i class="fas fa-home"></i> Dashboard</div>
+                <div class="nav-item" data-page="communication"><i class="fas fa-comments"></i> Communication Center</div>
+                <div class="nav-item" data-page="announcements"><i class="fas fa-bullhorn"></i> Announcements</div>
+                <div class="nav-section">My Children</div>
+                <div class="nav-item" data-page="attendance"><i class="fas fa-calendar-check"></i> Attendance</div>
+                <div class="nav-item" data-page="timetable"><i class="fas fa-table"></i> Timetable</div>
+                <div class="nav-item" data-page="teachers"><i class="fas fa-chalkboard-teacher"></i> Teachers</div>
+                <div class="nav-section">School</div>
+                <div class="nav-item" data-page="events"><i class="fas fa-calendar-day"></i> Events</div>
+                <div class="nav-section">Account</div>
+                <div class="nav-item" data-page="profile"><i class="fas fa-user-circle"></i> Profile</div>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">P</div>
+                    <div class="user-details"><div class="user-name" id="userName">Parent</div><div class="user-role">Parent/Guardian</div></div>
+                </div>
+                <button class="btn btn-secondary btn-block" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="topbar">
+                <div class="flex items-center gap-2">
+                    <button class="mobile-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+                    <h1 class="page-title" id="pageTitle">Dashboard</h1>
+                </div>
+                <div class="topbar-actions">
+                    <div class="notification-bell" onclick="toggleNotifications()">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge hidden" id="notifBadge">0</span>
+                        <div class="notifications-dropdown" id="notifDropdown">
+                            <div class="notifications-header">Notifications</div>
+                            <div id="notifList"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="page-content" id="pageContent"></div>
+        </main>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="/assets/js/api.js"></script>
+    <script src="/shared/communication-center.js"></script>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script>
+        const API = KalinabiriAPI.API_BASE;
+        const TOKEN = KalinabiriAPI.getToken;
+        let currentUser = null;
+        let commCenter = null;
+        let selectedChild = null;
+        const $ = s => document.querySelector(s);
+        const $$ = s => document.querySelectorAll(s);
+
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = 'toast ' + type;
+            toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i><span>${escapeHtml(message)}</span>`;
+            $('#toastContainer').appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        }
+
+        function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+
+        $('#loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                const data = await KalinabiriAPI.login($('#loginUsername').value, $('#loginPassword').value);
+                if (data.user.role !== 'parent') throw new Error('Access denied. Parent only.');
+                showDashboard();
+            } catch (err) {
+                $('#loginError').textContent = err.message;
+                $('#loginError').style.display = 'block';
+            }
+        });
+
+        function logout() { KalinabiriAPI.clearAuth(); location.reload(); }
+
+        async function showDashboard() {
+            $('#loginScreen').classList.add('hidden');
+            $('#dashboard').classList.remove('hidden');
+            try { currentUser = await KalinabiriAPI.me(); } catch (e) { logout(); return; }
+            const initials = (currentUser.first_name?.[0] || 'P') + (currentUser.last_name?.[0] || '');
+            $('#userAvatar').textContent = initials.toUpperCase();
+            $('#userName').textContent = `${currentUser.first_name} ${currentUser.last_name}`;
+            loadNotifications();
+            loadPage('overview');
+        }
+
+        $$('.nav-item').forEach(item => item.addEventListener('click', () => {
+            $$('.nav-item').forEach(n => n.classList.remove('active'));
+            item.classList.add('active');
+            loadPage(item.dataset.page);
+        }));
+
+        async function loadPage(page) {
+            const titles = { overview: 'Dashboard', communication: 'Communication Center', announcements: 'Announcements', attendance: 'Attendance', timetable: 'Timetable', teachers: 'Teachers', events: 'Events', profile: 'Profile' };
+            $('#pageTitle').textContent = titles[page] || page;
+            const content = $('#pageContent');
+            content.innerHTML = '<div class="loading-overlay"><div class="spinner"></div></div>';
+            try {
+                switch (page) {
+                    case 'overview': await renderOverview(content); break;
+                    case 'communication': await renderCommunication(content); break;
+                    case 'announcements': await renderAnnouncements(content); break;
+                    case 'attendance': await renderAttendance(content); break;
+                    case 'timetable': await renderTimetable(content); break;
+                    case 'teachers': await renderTeachers(content); break;
+                    case 'events': await renderEvents(content); break;
+                    case 'profile': await renderProfile(content); break;
+                }
+            } catch (err) {
+                content.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle" style="font-size:48px;color:var(--danger);margin-bottom:16px;"></i><p>${err.message}</p></div>`;
+            }
+        }
+
+        async function renderOverview(c) {
+            const [children, announcements] = await Promise.all([
+                apiCall('/parent/children').catch(() => []),
+                apiCall('/announcements?audience=parents&limit=5').catch(() => [])
+            ]);
+            const stats = children.reduce((acc, ch) => { acc.present += ch.attendance?.present || 0; acc.absent += ch.attendance?.absent || 0; return acc; }, { present: 0, absent: 0 });
+            c.innerHTML = `
+                <div class="page-header"><h2>Welcome, ${currentUser.first_name}</h2><p>Your children's overview</p></div>
+                <div class="stats-grid">
+                    <div class="stat-card"><div class="stat-icon green"><i class="fas fa-child"></i></div><div class="stat-value">${children.length}</div><div class="stat-label">Children</div></div>
+                    <div class="stat-card"><div class="stat-icon success"><i class="fas fa-check"></i></div><div class="stat-value">${stats.present}</div><div class="stat-label">Days Present</div></div>
+                    <div class="stat-card"><div class="stat-icon red"><i class="fas fa-times"></i></div><div class="stat-value">${stats.absent}</div><div class="stat-label">Days Absent</div></div>
+                    <div class="stat-card"><div class="stat-icon blue"><i class="fas fa-bullhorn"></i></div><div class="stat-value">${announcements.length}</div><div class="stat-label">Announcements</div></div>
+                </div>
+                <div class="card"><div class="card-header"><h3 class="card-title">Your Children</h3></div>
+                    <div class="children-grid">${children.map(ch => `
+                        <div class="child-card" onclick="selectChild('${ch.id}')">
+                            <div class="child-avatar">${(ch.first_name?.[0] || '?').toUpperCase()}</div>
+                            <div class="child-name">${escapeHtml(ch.first_name + ' ' + ch.last_name)}</div>
+                            <div class="child-meta">${escapeHtml(ch.class || '')} ${escapeHtml(ch.stream || '')}</div>
+                            <div class="text-sm text-muted">Attendance: ${ch.attendance?.rate || 0}%</div>
+                        </div>`).join('') || '<div class="empty-state">No children linked</div>'}
+                    </div>
+                </div>
+                <div class="card"><div class="card-header"><h3 class="card-title">Announcements</h3></div>
+                    ${(announcements || []).map(a => `<div style="padding:12px;border-bottom:1px solid var(--border);"><strong>${escapeHtml(a.title)}</strong>${a.priority === 'high' ? ' <span class="badge badge-danger">High</span>' : ''}<div class="text-sm text-muted">${new Date(a.created_at).toLocaleDateString()}</div><p class="text-sm">${escapeHtml(a.content)}</p></div>`).join('') || '<div class="empty-state">No announcements</div>'}
+                </div>`;
+        }
+
+        function selectChild(id) {
+            selectedChild = id;
+            loadPage('attendance');
+        }
+
+        async function renderCommunication(c) {
+            c.innerHTML = `
+                <div class="card" style="padding:0; height: calc(100vh - 180px); display: flex; flex-direction: column;">
+                    <div class="comm-header"><h3 class="card-title">Communication Center</h3><div class="flex gap-2"><button class="btn btn-sm btn-primary" onclick="openNewConversation()"><i class="fas fa-plus"></i> New Message</button><button class="btn btn-sm btn-secondary" onclick="refreshConversations()"><i class="fas fa-sync"></i></button></div></div>
+                    <div class="comm-body">
+                        <div class="comm-sidebar"><div class="comm-search"><input type="text" id="commSearch" placeholder="Search..." oninput="filterConversations(this.value)"></div><div class="comm-conversations" id="commConversations"><div class="loading-overlay"><div class="spinner"></div></div></div></div>
+                        <div class="comm-chat">
+                            <div class="comm-chat-header" id="commChatHeader"><div><strong>Select a conversation</strong></div></div>
+                            <div class="comm-messages" id="commMessages"><div class="comm-empty"><i class="fas fa-comments" style="font-size:48px;opacity:0.3;margin-bottom:16px;"></i><p>Select a conversation</p></div></div>
+                            <div class="comm-input-area hidden" id="commInputArea"><div class="flex gap-2 items-center"><textarea id="commMessageInput" placeholder="Type a message..." rows="1" style="flex:1;resize:none;min-height:44px;max-height:120px;"></textarea><button class="btn btn-primary" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button></div></div>
+                        </div>
+                    </div>
+                </div>`;
+            if (!commCenter) {
+                commCenter = new CommunicationCenter({
+                    apiBase: API, currentUser: currentUser,
+                    onConversationChange: (c) => renderConversationList(c),
+                    onMessage: (m) => handleNewMessage(m),
+                    onTyping: (u) => updateTypingIndicator(u),
+                    onError: (e) => showToast(e.message, 'error')
+                });
+            }
+            const socket = io(API.replace('/api', ''), { auth: { token: TOKEN() }, transports: ['websocket', 'polling'] });
+            await commCenter.init(socket, currentUser);
+            $('#commMessageInput').addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
+        }
+
+        function renderConversationList(convs) {
+            const container = $('#commConversations');
+            if (!container) return;
+            if (!convs || !convs.length) { container.innerHTML = '<div class="empty-state">No conversations</div>'; return; }
+            container.innerHTML = convs.map(conv => {
+                const other = conv.members?.find(m => m.id !== currentUser.id);
+                const name = conv.type === 'direct' && other ? `${other.first_name} ${other.last_name}` : conv.name || 'Group';
+                const unread = conv.unread_count || 0;
+                const last = conv.messages?.[0];
+                const preview = last?.content?.substring(0, 50) || 'No messages';
+                return `<div class="nav-item" data-conv-id="${conv.id}" onclick="selectConversation('${conv.id}')" style="padding:12px 16px;border-bottom:1px solid var(--border);">
+                    <div class="user-avatar" style="width:44px;height:44px;">${(name[0] || '?').toUpperCase()}</div>
+                    <div style="flex:1;min-width:0;"><div class="flex justify-between items-center"><strong>${escapeHtml(name)}</strong><span class="text-sm text-muted">${last ? new Date(last.created_at).toLocaleDateString() : ''}</span></div><div class="flex justify-between items-center"><span class="text-sm text-muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(preview)}</span>${unread ? `<span class="nav-badge">${unread}</span>` : ''}</div></div>
+                </div>`;
+            }).join('');
+        }
+
+        function filterConversations(q) { $$('#commConversations .nav-item').forEach(item => { item.style.display = item.textContent.toLowerCase().includes(q.toLowerCase()) ? '' : 'none'; }); }
+
+        async function selectConversation(convId) {
+            if (!commCenter) return;
+            const conv = await commCenter.getConversation(convId);
+            if (!conv) return;
+            commCenter.setActiveConversation(conv);
+            const other = conv.members?.find(m => m.id !== currentUser.id);
+            const name = conv.type === 'direct' && other ? `${other.first_name} ${other.last_name}` : conv.name || 'Group';
+            $('#commChatHeader').innerHTML = `<div><strong>${escapeHtml(name)}</strong><div class="text-sm text-muted">${conv.members?.length || 0} members</div></div>`;
+            $('#commInputArea').classList.remove('hidden');
+            const messages = await commCenter.loadMessages(convId);
+            $('#commMessages').innerHTML = messages.map(createMessageHtml).join('');
+            $('#commMessages').scrollTop = $('#commMessages').scrollHeight;
+            if (commCenter.socket) commCenter.socket.emit('join_conversation', convId);
+        }
+
+        function createMessageHtml(msg) {
+            const isOwn = msg.sender_id === currentUser.id;
+            const sender = `${msg.sender_first || ''} ${msg.sender_last || ''}`.trim();
+            return `<div class="comm-message ${isOwn ? 'own' : ''}"><div class="avatar">${(sender[0] || '?').toUpperCase()}</div><div class="bubble"><div class="sender">${escapeHtml(sender)}</div><div>${escapeHtml(msg.content)}</div><div class="meta"><span>${new Date(msg.created_at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</span><span>${msg.read_count > 0 ? '✓✓' : '✓'}</span></div></div></div>`;
+        }
+
+        async function sendMessage() {
+            const input = $('#commMessageInput');
+            if (!input?.value.trim() || !commCenter?.activeConversation) return;
+            const content = input.value.trim();
+            input.value = '';
+            try { await commCenter.sendMessage(commCenter.activeConversation.id, content); } catch (e) { showToast(e.message, 'error'); }
+        }
+
+        function handleNewMessage(msg) {
+            if (commCenter?.activeConversation?.id === msg.conversation_id) {
+                $('#commMessages').insertAdjacentHTML('beforeend', createMessageHtml(msg));
+                $('#commMessages').scrollTop = $('#commMessages').scrollHeight;
+            }
+        }
+
+        function updateTypingIndicator(users) {
+            const convId = commCenter?.activeConversation?.id;
+            const u = convId ? users.get(convId)?.users || [] : [];
+            $('#commTyping')?.remove();
+            if (u.length && commCenter?.activeConversation) {
+                const div = document.createElement('div');
+                div.id = 'commTyping'; div.className = 'text-sm text-muted'; div.style.padding = '4px 24px';
+                div.textContent = u.length === 1 ? `${u[0]} is typing...` : `${u.length} people typing...`;
+                $('#commMessages').after(div);
+            }
+        }
+
+        async function openNewConversation() {
+            const users = await apiCall('/directory?limit=100').catch(() => []);
+            const html = `<div class="form-group"><label>Select Users</label><input type="text" placeholder="Search..." oninput="filterNewUsers(this.value)" style="margin-bottom:8px;"><div id="newConvUserList" style="max-height:300px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;"></div></div>`;
+            openModal('New Conversation', html, `<button class="btn btn-secondary" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="createNewConversation()">Create</button>`);
+            $('#newConvUserList').innerHTML = (users || []).map(u => `<label class="nav-item" style="cursor:pointer;"><input type="checkbox" value="${u.id}" class="new-conv-user" style="width:18px;height:18px;"><div class="user-avatar" style="width:36px;height:36px;">${(u.first_name?.[0] || '?').toUpperCase()}</div><div><div>${escapeHtml(u.first_name + ' ' + u.last_name)}</div><div class="text-sm text-muted">${escapeHtml(u.role)}</div></div></label>`).join('');
+        }
+
+        function filterNewUsers(q) { $$('#newConvUserList .nav-item').forEach(item => { item.style.display = item.textContent.toLowerCase().includes(q.toLowerCase()) ? '' : 'none'; }); }
+
+        async function createNewConversation() {
+            const ids = $$('.new-conv-user:checked').map(cb => Number(cb.value));
+            if (!ids.length) return showToast('Select users', 'error');
+            try {
+                const conv = await commCenter.createConversation('direct', '', '', ids);
+                closeModal();
+                await selectConversation(conv.id);
+                showToast('Conversation created', 'success');
+            } catch (e) { showToast(e.message, 'error'); }
+        }
+
+        async function refreshConversations() { if (commCenter) await commCenter.loadConversations(); }
+
+        async function renderAnnouncements(c) {
+            const list = await apiCall('/announcements?audience=parents').catch(() => []);
+            c.innerHTML = `<div class="page-header"><h2>Announcements</h2><p>School announcements for parents</p></div>
+                <div class="card">${(list || []).map(a => `<div style="padding:16px;border-bottom:1px solid var(--border);"><strong>${escapeHtml(a.title)}</strong>${a.priority === 'high' ? ' <span class="badge badge-danger">High</span>' : ''}<div class="text-sm text-muted">${new Date(a.created_at).toLocaleDateString()}</div><p class="text-sm">${escapeHtml(a.content)}</p></div>`).join('') || '<div class="empty-state">No announcements</div>'}</div>`;
+        }
+
+        async function renderAttendance(c) {
+            const children = await apiCall('/parent/children').catch(() => []);
+            const childId = selectedChild || (children[0]?.id);
+            if (!childId) { c.innerHTML = '<div class="empty-state">No children linked</div>'; return; }
+            const att = await apiCall(`/parent/children/${childId}/attendance`).catch(() => []);
+            const child = children.find(ch => ch.id === childId);
+            c.innerHTML = `<div class="page-header"><h2>Attendance</h2><p>${escapeHtml(child?.first_name + ' ' + child?.last_name || '')}</p></div>
+                <div class="card"><div class="form-group"><label>Select Child</label><select onchange="selectedChild=this.value;loadPage('attendance');">${children.map(ch => `<option value="${ch.id}" ${ch.id === childId ? 'selected' : ''}>${escapeHtml(ch.first_name + ' ' + ch.last_name)}</option>`).join('')}</select></div>
+                <div class="table-wrapper"><table><thead><tr><th>Date</th><th>Status</th><th>Notes</th></tr></thead><tbody>${(Array.isArray(att) ? att : []).map(r => `<tr><td>${new Date(r.date).toLocaleDateString()}</td><td><span class="badge badge-${r.status === 'present' ? 'success' : r.status === 'late' ? 'warning' : 'danger'}">${r.status}</span></td><td>${escapeHtml(r.notes || '')}</td></tr>`).join('') || '<tr><td colspan="3" class="empty-state">No records</td></tr>'}</tbody></table></div></div>`;
+        }
+
+        async function renderTimetable(c) {
+            const children = await apiCall('/parent/children').catch(() => []);
+            const childId = selectedChild || (children[0]?.id);
+            c.innerHTML = `<div class="page-header"><h2>Timetable</h2><p>${children.length ? 'View your children\\'s timetables' : 'No children linked'}</p></div>
+                <div class="card"><div class="form-group"><label>Select Child</label><select id="ttChildSelect" onchange="renderTimetable($('#pageContent'))">${children.map(ch => `<option value="${ch.id}" ${ch.id === childId ? 'selected' : ''}>${escapeHtml(ch.first_name + ' ' + ch.last_name)}</option>`).join('')}</select></div>
+                <div id="ttContent">${childId ? await apiCall(`/parent/children/${childId}/timetable`).then(t => t.html || '<div class="empty-state">No timetable</div>').catch(() => '<div class="empty-state">No timetable</div>') : '<div class="empty-state">Select a child</div>'}</div></div>`;
+        }
+
+        async function renderTeachers(c) {
+            const children = await apiCall('/parent/children').catch(() => []);
+            const childId = selectedChild || (children[0]?.id);
+            const teachers = childId ? await apiCall(`/parent/children/${childId}/teachers`).catch(() => []) : [];
+            c.innerHTML = `<div class="page-header"><h2>Teachers</h2><p>Your children's teachers</p></div>
+                <div class="card"><div class="grid-2">${(teachers || []).map(t => `<div style="padding:16px;background:var(--primary);border-radius:8px;display:flex;gap:12px;align-items:center;"><div class="user-avatar">${(t.first_name?.[0] || 'T').toUpperCase()}</div><div style="flex:1;"><strong>${escapeHtml(t.first_name + ' ' + t.last_name)}</strong><div class="text-sm text-muted">${escapeHtml(t.subject || 'Teacher')}</div></div><button class="btn btn-sm btn-primary" onclick="messageUser('${t.id}')"><i class="fas fa-comment"></i></button></div>`).join('') || '<div class="empty-state">No teachers</div>'}</div></div>`;
+        }
+
+        async function messageUser(userId) {
+            try {
+                const conv = await commCenter.createConversation('direct', '', '', [userId]);
+                loadPage('communication');
+                setTimeout(() => selectConversation(conv.id), 500);
+            } catch (e) { showToast(e.message, 'error'); }
+        }
+
+        async function renderEvents(c) {
+            const e = await apiCall('/events').catch(() => []);
+            c.innerHTML = `<div class="page-header"><h2>Events</h2><p>School calendar</p></div>
+                <div class="card">${(e || []).map(ev => `<div style="padding:16px;border-bottom:1px solid var(--border);"><strong>${escapeHtml(ev.title)}</strong><div class="text-sm text-muted">${new Date(ev.start_date).toLocaleDateString()}</div><p class="text-sm">${escapeHtml(ev.description || '')}</p></div>`).join('') || '<div class="empty-state">No events</div>'}</div>`;
+        }
+
+        async function renderProfile(c) {
+            c.innerHTML = `<div class="page-header"><h2>Profile</h2><p>Your account</p></div>
+                <div class="card"><div class="form-row"><div class="form-group"><label>First Name</label><input type="text" id="pFirst" value="${escapeHtml(currentUser.first_name || '')}"></div><div class="form-group"><label>Last Name</label><input type="text" id="pLast" value="${escapeHtml(currentUser.last_name || '')}"></div></div>
+                <div class="form-group"><label>Email</label><input type="email" id="pEmail" value="${escapeHtml(currentUser.email || '')}"></div>
+                <div class="form-group"><label>Phone</label><input type="text" id="pPhone" value="${escapeHtml(currentUser.phone || '')}"></div>
+                <button class="btn btn-primary" onclick="updateProfile()"><i class="fas fa-save"></i> Save</button></div>`;
+        }
+
+        async function updateProfile() {
+            try { await apiCall('/users/' + currentUser.id, { method: 'PUT', body: JSON.stringify({ first_name: $('#pFirst').value, last_name: $('#pLast').value, email: $('#pEmail').value, phone: $('#pPhone').value }) }); showToast('Profile updated', 'success'); } catch (e) { showToast(e.message, 'error'); }
+        }
+
+        async function loadNotifications() {
+            try {
+                const notifs = await apiCall('/notifications?limit=10');
+                const list = $('#notifList');
+                if (notifs && notifs.length) {
+                    $('#notifBadge').textContent = notifs.filter(n => !n.is_read).length;
+                    $('#notifBadge').classList.toggle('hidden', !notifs.some(n => !n.is_read));
+                    list.innerHTML = notifs.map(n => `<div class="notification-item"><div class="notification-title">${escapeHtml(n.title)}</div><div class="notification-time">${new Date(n.created_at).toLocaleString()}</div></div>`).join('');
+                } else { list.innerHTML = '<div class="empty-state">No notifications</div>'; }
+            } catch (e) {}
+        }
+
+        function toggleNotifications() { $('#notifDropdown').classList.toggle('show'); }
+        document.addEventListener('click', (e) => { if (!e.target.closest('.notification-bell')) $('#notifDropdown')?.classList.remove('show'); });
+
+        function openModal(title, body, footer) {
+            if (!$('#modalOverlay')) {
+                const overlay = document.createElement('div');
+                overlay.id = 'modalOverlay';
+                overlay.className = 'modal-overlay';
+                overlay.innerHTML = '<div class="modal"><div class="modal-header"><div class="modal-title" id="modalTitle"></div><button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button></div><div class="modal-body" id="modalBody"></div><div class="modal-footer" id="modalFooter"></div></div>';
+                document.body.appendChild(overlay);
+            }
+            $('#modalTitle').textContent = title;
+            $('#modalBody').innerHTML = body;
+            $('#modalFooter').innerHTML = footer || '';
+            $('#modalOverlay').classList.add('show');
+        }
+
+        function closeModal() { $('#modalOverlay')?.classList.remove('show'); }
+        function toggleSidebar() { $('#sidebar').classList.toggle('open'); }
+
+        if (TOKEN()) showDashboard();
+    </script>
+    <script src="/assets/js/theme-manager.js"></script>
+    <script src="/assets/js/theme-toolbar.js"></script>
+</body>
+</html>

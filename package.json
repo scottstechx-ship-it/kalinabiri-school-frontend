@@ -1,0 +1,6 @@
+{
+  "type": "module",
+  "dependencies": {
+    "netlify": "^26.1.0"
+  }
+}

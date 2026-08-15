@@ -1,0 +1,27 @@
+node_modules/
+.env
+.env.local
+.env.*.local
+.deploy_id
+.DS_Store
+Thumbs.db
+*.log
+
+# Ad-hoc scratch / test artifacts
+.hermes-tmp.*
+_*.bin
+_*.mjs
+_*.js
+_t.*
+
+# Large binary media — store on CDN/object storage, not in git
+*.mp4
+*.mov
+*.webm
+*.avi
+*.mkv
+*.wav
+*.mp3
+*.flac
+assets/videos/
+assets/images/kalibz/

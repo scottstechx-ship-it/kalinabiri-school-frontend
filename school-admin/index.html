@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Admin Dashboard | Kalinabiri SS</title>
+    <link rel="icon" type="image/x-icon" href="/assets/images/logo.ico">
+    <link rel="apple-touch-icon" href="/assets/images/logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/themes.css">
+    <link rel="stylesheet" href="/assets/css/portal.css">
+    <link rel="stylesheet" href="/assets/css/school-admin.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: 'var(--primary)', accent: 'var(--accent)', 'accent-dark': 'var(--accent-dark)',
+              bg: 'var(--bg)', 'bg-card': 'var(--bg-card)', 'bg-hover': 'var(--bg-hover)',
+              text: 'var(--text)', 'text-muted': 'var(--text-muted)', border: 'var(--border)',
+              danger: 'var(--danger)', warning: 'var(--warning)', success: 'var(--success)', info: 'var(--info)'
+            }
+          }
+        }
+      }
+    </script>
+</head>
+<body class="min-h-screen">
+
+    <!-- LOGIN -->
+    <div id="loginScreen" class="login-screen">
+      <div class="login-card">
+        <div class="login-logo">
+          <img src="/assets/images/logo.png" alt="Kalinabiri SS">
+          <h1>School Admin</h1>
+          <p>Kalinabiri Secondary School</p>
+        </div>
+        <form id="loginForm">
+          <div class="form-group">
+            <label class="form-label">Username</label>
+            <input type="text" id="loginUsername" required class="form-input" placeholder="admin">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" id="loginPassword" required class="form-input" placeholder="Enter password">
+          </div>
+          <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-sign-in-alt"></i> Sign In</button>
+          <p id="loginError" class="text-sm text-danger mt-3 hidden"></p>
+          <div class="text-center mt-4 text-sm text-muted">
+            <a href="/dashboard-access.html" class="text-accent">← Back to portal picker</a>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="dashboard" class="app-layout hidden">
+
+      <!-- SIDEBAR -->
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-logo">
+            <img src="/assets/images/logo.png" alt="Kalinabiri SS">
+            <div>
+              <div>School Admin</div>
+              <div class="sidebar-subtitle">Kalinabiri SS</div>
+            </div>
+          </div>
+        </div>
+        <nav class="sidebar-nav">
+          <div class="nav-section">Overview</div>
+          <div class="nav-item active" data-page="overview"><i class="fas fa-chart-line"></i> Dashboard</div>
+          <div class="nav-item" data-page="analytics"><i class="fas fa-chart-pie"></i> Analytics</div>
+
+          <div class="nav-section">Communication</div>
+          <div class="nav-item" data-page="communication"><i class="fas fa-comments"></i> Communication Center</div>
+          <div class="nav-item" data-page="announcements"><i class="fas fa-bullhorn"></i> Announcements</div>
+          <div class="nav-item" data-page="emergency"><i class="fas fa-triangle-exclamation"></i> Emergency Alerts</div>
+
+          <div class="nav-section">People</div>
+          <div class="nav-item" data-page="teachers"><i class="fas fa-chalkboard-teacher"></i> Teachers</div>
+          <div class="nav-item" data-page="students"><i class="fas fa-user-graduate"></i> Students</div>
+          <div class="nav-item" data-page="parents"><i class="fas fa-users"></i> Parents</div>
+          <div class="nav-item" data-page="directory"><i class="fas fa-address-book"></i> Directory</div>
+
+          <div class="nav-section">Academics</div>
+          <div class="nav-item" data-page="classes"><i class="fas fa-school"></i> Classes</div>
+          <div class="nav-item" data-page="subjects"><i class="fas fa-book"></i> Subjects</div>
+          <div class="nav-item" data-page="timetable"><i class="fas fa-table"></i> Timetable</div>
+          <div class="nav-item" data-page="attendance"><i class="fas fa-calendar-check"></i> Attendance</div>
+          <div class="nav-item" data-page="results"><i class="fas fa-chart-bar"></i> Results</div>
+
+          <div class="nav-section">School</div>
+          <div class="nav-item" data-page="events"><i class="fas fa-calendar-day"></i> Events</div>
+          <div class="nav-item" data-page="gallery"><i class="fas fa-images"></i> Gallery</div>
+          <div class="nav-item" data-page="admissions"><i class="fas fa-user-plus"></i> Admissions</div>
+
+          <div class="nav-section">Account</div>
+          <div class="nav-item" data-page="profile"><i class="fas fa-user-circle"></i> Profile</div>
+        </nav>
+        <div class="sidebar-footer">
+          <div class="user-info">
+            <div class="user-avatar" id="userAvatar">A</div>
+            <div class="user-details">
+              <div class="user-name" id="userName">Admin</div>
+              <div class="user-role">School Admin</div>
+            </div>
+          </div>
+          <button onclick="logout()" class="btn btn-secondary btn-block"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+      </aside>
+
+      <!-- MAIN -->
+      <main class="main-content">
+        <header class="topbar">
+          <div class="topbar-left">
+            <button class="mobile-toggle" onclick="toggleSidebar()" aria-label="Toggle menu"><i class="fas fa-bars"></i></button>
+            <h1 class="page-title" id="pageTitle">Dashboard</h1>
+          </div>
+          <div class="topbar-actions">
+            <button class="btn btn-ghost btn-sm" onclick="quickSearch()"><i class="fas fa-search"></i></button>
+            <div class="notification-bell" onclick="toggleNotifications()">
+              <i class="fas fa-bell"></i>
+              <span class="notification-badge hidden" id="notifBadge">0</span>
+              <div class="notifications-dropdown" id="notifDropdown">
+                <div class="notifications-header">
+                  <span>Notifications</span>
+                  <button class="btn btn-ghost btn-sm" onclick="markAllRead()">Mark all read</button>
+                </div>
+                <div class="notifications-list" id="notifList"></div>
+              </div>
+            </div>
+          </div>
+        </header>
+        <div class="page-content" id="pageContent"></div>
+      </main>
+    </div>
+
+    <!-- MODAL -->
+    <div class="modal-overlay" id="modalOverlay">
+      <div class="modal" id="modal">
+        <div class="modal-header">
+          <div class="modal-title" id="modalTitle">Modal</div>
+          <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body" id="modalBody"></div>
+        <div class="modal-footer" id="modalFooter"></div>
+      </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/theme-manager.js"></script>
+    <script src="/assets/js/theme-toolbar.js"></script>
+    <script src="/shared/communication-center.js"></script>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script src="/assets/js/school-admin.js"></script>
+</body>
+</html>

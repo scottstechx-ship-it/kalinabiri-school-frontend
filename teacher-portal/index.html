@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teacher Portal | Kalinabiri SS</title>
+<link rel="icon" type="image/x-icon" href="/assets/images/logo.ico">
+<link rel="apple-touch-icon" href="/assets/images/logo.png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--green-dark:#0a1f0a;--green-mid:#1a4d2e;--green-light:#2d7a4a;--accent:#4ade80;--accent-2:#ffd700;--danger:#ef4444;--success:#22c55e}
+body{font-family:'Inter',sans-serif;background:var(--green-dark);min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:auto;padding:20px}
+
+.auth-wrap{display:flex;width:100%;max-width:1100px;min-height:600px;border-radius:24px;overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,.5)}
+
+.left-panel{width:420px;flex-shrink:0;background:linear-gradient(160deg,#0a1f0a,#1a4d2e);padding:50px 40px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+.left-panel::before{content:'';position:absolute;top:-80px;right:-80px;width:250px;height:250px;border-radius:50%;background:rgba(74,222,128,.08)}
+.left-panel::after{content:'';position:absolute;bottom:-60px;left:-40px;width:200px;height:200px;border-radius:50%;background:rgba(74,222,128,.06)}
+    /* Mobile Menu */
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.5rem;
+    }
+
+    .mobile-menu-btn span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: var(--accent-green);
+      margin: 5px 0;
+      transition: all 0.3s ease;
+    }
+
+    .mobile-menu-btn.active span:nth-child(1) {
+      transform: translateY(7px) rotate(45deg);
+    }
+    .mobile-menu-btn.active span:nth-child(2) { opacity: 0; }
+    .mobile-menu-btn.active span:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+    }
+
+    @media (max-width: 1000px) {
+      .nav-links {
+        position: fixed;
+        top: 68px;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        background: rgba(10, 31, 10, 0.98);
+        backdrop-filter: blur(20px);
+        padding: 1.5rem;
+        gap: 0.5rem;
+        border-bottom: 1px solid var(--glass-border);
+        transform: translateY(-120%);
+        opacity: 0;
+        transition: all 0.4s ease;
+        pointer-events: none;
+        z-index: 999;
+      }
+      .nav-links.mobile-open {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: all;
+      }
+      .nav-links li { width: 100%; text-align: center; }
+      .nav-links a { display: block; padding: 0.75rem; font-size: 1rem; }
+      .navbar { padding: 0.75rem 1.5rem; }
+      .mobile-menu-btn { display: block; }
+      .nav-cta { display: none; }
+    }
+
+
+.brand{display:flex;align-items:center;gap:14px;margin-bottom:48px;position:relative;z-index:1}
+.brand img{width:56px;height:56px;border-radius:14px;object-fit:cover;border:2px solid rgba(74,222,128,.3)}
+.brand-text{font-family:'Space Grotesk',sans-serif;font-size:1.25rem;font-weight:700;color:#fff}
+.brand-text span{display:block;font-size:.7rem;color:rgba(255,255,255,.5);font-weight:400;margin-top:2px}
+
+.headline{position:relative;z-index:1}
+.headline h1{font-family:'Space Grotesk',sans-serif;font-size:2.4rem;font-weight:800;color:#fff;line-height:1.1;margin-bottom:16px}
+.headline h1 span{display:block;background:linear-gradient(135deg,#4ade80,#ffd700);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.headline p{color:rgba(255,255,255,.6);font-size:.95rem;line-height:1.7;max-width:300px}
+.perks{margin:36px 0;position:relative;z-index:1;display:flex;flex-direction:column;gap:12px}
+.perk{display:flex;align-items:center;gap:10px;background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.15);color:#4ade80;padding:10px 16px;border-radius:50px;font-size:.85rem;font-weight:600}
+
+.back-link{position:relative;z-index:1}
+.back-link a{display:inline-flex;align-items:center;gap:8px;color:rgba(255,255,255,.45);text-decoration:none;font-size:.85rem;transition:color .2s}
+.back-link a:hover{color:#4ade80}
+
+.right-panel{flex:1;background:rgba(255,255,255,.05);backdrop-filter:blur(20px);padding:50px 48px;display:flex;flex-direction:column;justify-content:center}
+.form-top{margin-bottom:32px}
+.form-top h2{font-family:'Space Grotesk',sans-serif;font-size:1.8rem;font-weight:800;color:#4ade80;margin-bottom:6px}
+.form-top p{color:rgba(255,255,255,.5);font-size:.92rem}
+.banner{display:none;padding:12px 16px;border-radius:12px;font-size:.85rem;margin-bottom:20px;align-items:center;gap:10px}
+.banner.show{display:flex}
+.banner.err{background:rgba(220,38,38,.15);border:1px solid rgba(220,38,38,.3);color:#fca5a5}
+.banner.ok{background:rgba(22,163,74,.15);border:1px solid rgba(22,163,74,.3);color:#86efac}
+.banner.off{background:rgba(180,83,9,.15);border:1px solid rgba(180,83,9,.3);color:#fed7aa}
+.banner-icon{font-size:1.1rem;flex-shrink:0}
+
+.field{margin-bottom:18px}
+.field label{display:block;font-size:.82rem;font-weight:600;color:rgba(255,255,255,.6);margin-bottom:7px;letter-spacing:.3px}
+.input-wrap{position:relative}
+.input-wrap .ic{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:1rem;z-index:1;pointer-events:none}
+.input-wrap input{width:100%;padding:13px 44px;border:1.5px solid rgba(74,222,128,.2);border-radius:12px;font-size:.95rem;font-family:'Inter',sans-serif;color:#fff;background:rgba(255,255,255,.08);transition:border-color .2s,box-shadow .2s;outline:none}
+.input-wrap input::placeholder{color:rgba(255,255,255,.3)}
+.input-wrap input:focus{border-color:#4ade80;box-shadow:0 0 0 3px rgba(74,222,128,.15);background:rgba(255,255,255,.1)}
+.toggle-pass{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:1rem;padding:4px;opacity:.6;transition:opacity .2s;color:rgba(255,255,255,.5)}
+.toggle-pass:hover{opacity:1}
+
+.row{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}
+.check{display:flex;align-items:center;gap:8px;font-size:.85rem;color:rgba(255,255,255,.5);cursor:pointer}
+.check input{accent-color:#4ade80}
+.fg-link{font-size:.85rem;color:#4ade80;text-decoration:none;font-weight:600}
+.fg-link:hover{text-decoration:underline}
+
+.btn-submit{width:100%;padding:15px;border:none;border-radius:12px;background:linear-gradient(135deg,#0a1f0a,#1a4d2e);color:#4ade80;font-family:'Inter',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;transition:transform .15s,box-shadow .15s;box-shadow:0 4px 15px rgba(74,222,128,.2);letter-spacing:.3px;display:flex;align-items:center;justify-content:center;gap:8px;border:2px solid #4ade80}
+.btn-submit:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(74,222,128,.3)}
+.btn-submit:disabled{opacity:.7;cursor:not-allowed;transform:none}
+.btn-submit .arr{transition:transform .2s}
+.btn-submit:hover .arr{transform:translateX(4px)}
+.spin{display:inline-block;width:20px;height:20px;border:2px solid rgba(74,222,128,.3);border-top-color:#4ade80;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.divider{text-align:center;margin:20px 0;font-size:.8rem;color:rgba(255,255,255,.2)}
+.divider span{background:rgba(255,255,255,.05);padding:4px 12px;border-radius:20px}
+
+.back-link2{text-align:center;margin-top:16px;font-size:.85rem;color:rgba(255,255,255,.45)}
+.back-link2 a{color:#4ade80;text-decoration:none;font-weight:600}
+.dev{text-align:center;margin-top:20px;font-size:.75rem;color:rgba(255,255,255,.2)}
+.dev strong{color:rgba(255,255,255,.4)}
+
+/* TABS */
+.auth-tabs{display:flex;gap:0;margin-bottom:24px;border-bottom:1px solid rgba(74,222,128,.2)}
+.auth-tab{padding:10px 20px;font-size:.85rem;font-weight:600;color:rgba(255,255,255,.4);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s}
+.auth-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+/* Register form */
+.reg-form{display:none}
+.reg-form.active{display:block}
+.reg-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:768px){
+  .auth-wrap{flex-direction:column}
+  .left-panel{width:100%;min-height:auto;padding:40px 30px}
+  .right-panel{padding:40px 30px}
+  .perks{display:none}
+  .reg-grid{grid-template-columns:1fr}
+}
+canvas#webgl-bg{position:fixed;inset:0;z-index:0;pointer-events:none}
+</style>
+</head>
+<body>
+<canvas id="webgl-bg"></canvas>
+<div class="auth-wrap" style="position:relative;z-index:1">
+
+  <div class="left-panel">
+    <div class="brand">
+      <img src="/assets/images/logo.jpeg" alt="Kalinabiri SS" onerror="this.style.display='none'">
+      <div class="brand-text">Kalinabiri SS<br><span>Teacher Portal</span></div>
+    </div>
+    <div class="headline">
+      <h1><span>Empower</span>Education</h1>
+      <p>Access your teaching dashboard, manage classes, track student progress, and communicate with parents.</p>
+    </div>
+    <div class="perks">
+      <div class="perk">&#128218; Manage Classes</div>
+      <div class="perk">&#10004; Create Assessments</div>
+      <div class="perk">&#128200; Track Results</div>
+      <div class="perk">&#128276; Announcements</div>
+    </div>
+    <div class="back-link">
+      <a href="/dashboard-access.html">&#8592; Back to Website</a>
+    </div>
+  </div>
+
+  <div class="right-panel">
+    <div class="auth-tabs">
+      <div class="auth-tab active" id="tab-login" onclick="showTab('login')">Sign In</div>
+      <div class="auth-tab" id="tab-register" onclick="showTab('register')">Register</div>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="login-form">
+      <div class="form-top">
+        <h2>Teacher Sign In</h2>
+        <p>Access your teaching dashboard</p>
+      </div>
+      <div class="banner" id="statusBanner"><span class="banner-icon" id="bannerIcon"></span><span id="bannerText"></span></div>
+      <div class="field">
+        <label>Username</label>
+        <div class="input-wrap">
+          <span class="ic">&#128100;</span>
+          <input type="text" id="username" placeholder="teacher@kalinabiriss.ac.ug" autocomplete="username">
+        </div>
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <div class="input-wrap">
+          <span class="ic">&#128272;</span>
+          <input type="password" id="password" placeholder="&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;" autocomplete="current-password">
+          <button type="button" class="toggle-pass" id="togglePassBtn" onclick="togglePass()">&#128065;</button>
+        </div>
+      </div>
+      <div class="row">
+        <label class="check"><input type="checkbox" id="remember"> Remember me</label>
+        <a href="#" class="fg-link" onclick="showReset();return false">Forgot password?</a>
+      </div>
+      <button class="btn-submit" id="loginBtn" onclick="handleLogin()">
+        <span>Sign In to Dashboard</span>
+        <span class="arr">&#8594;</span>
+      </button>
+      <div class="back-link2">
+        <a href="/teacher-dashboard/">Go to Dashboard &#8594;</a>
+      </div>
+      <div class="dev">Developed by <strong>ScottsTechX</strong> | &#169; 2026</div>
+    </div>
+
+    <!-- REGISTER -->
+    <div id="register-form" class="reg-form">
+      <div class="form-top">
+        <h2>Register Teacher</h2>
+        <p>Create your teacher account</p>
+      </div>
+      <div class="banner" id="regBanner"><span class="banner-icon" id="regBannerIcon"></span><span id="regBannerText"></span></div>
+      <div class="reg-grid">
+        <div class="field">
+          <label>Full Name</label>
+          <div class="input-wrap"><span class="ic">&#128100;</span><input type="text" id="regName" placeholder="John Sserwadda"></div>
+        </div>
+        <div class="field">
+          <label>Username</label>
+          <div class="input-wrap"><span class="ic">&#128100;</span><input type="text" id="regUsername" placeholder="jserwadda"></div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Email Address</label>
+        <div class="input-wrap"><span class="ic">&#128231;</span><input type="email" id="regEmail" placeholder="john@kalinabiriss.ac.ug"></div>
+      </div>
+      <div class="field">
+        <label>Phone Number</label>
+        <div class="input-wrap"><span class="ic">&#128241;</span><input type="text" id="regPhone" placeholder="+256 700 000 000"></div>
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <div class="input-wrap"><span class="ic">&#128272;</span><input type="password" id="regPassword" placeholder="Min. 6 characters"></div>
+      </div>
+      <div class="field">
+        <label>Subjects You Teach</label>
+        <div class="input-wrap"><span class="ic">&#128218;</span><input type="text" id="regSubjects" placeholder="Mathematics, Physics"></div>
+      </div>
+      <button class="btn-submit" id="regBtn" onclick="handleRegister()">
+        <span>Create Account</span>
+        <span class="arr">&#8594;</span>
+      </button>
+      <div class="back-link2">
+        Already have an account? <a href="#" onclick="showTab('login');return false">Sign In</a>
+      </div>
+      <div class="dev">Developed by <strong>ScottsTechX</strong> | &#169; 2026</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const API_BASE = '/api';
+
+function showBanner(type, icon, text) {
+  const b = document.getElementById('statusBanner');
+  document.getElementById('bannerIcon').textContent = icon;
+  document.getElementById('bannerText').textContent = text;
+  b.className = 'banner show ' + type;
+}
+function hideBanner() { document.getElementById('statusBanner').className = 'banner'; }
+
+function togglePass() {
+  const inp = document.getElementById('password');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+function showTab(tab) {
+  document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+  document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+  document.getElementById('login-form').style.display = tab === 'login' ? 'block' : 'none';
+  document.getElementById('register-form').classList.toggle('active', tab === 'register');
+  document.getElementById('register-form').style.display = tab === 'register' ? 'block' : 'none';
+}
+
+function showReset() {
+  showBanner('off', '&#128231;', 'Contact admin to reset your password.');
+}
+
+// Auth guard
+(function() {
+  const token = localStorage.getItem('kalinabiri_token');
+  const role = localStorage.getItem('kalinabiri_role');
+  if (token && role === 'teacher') {
+    window.location.href = '/teacher-dashboard/';
+  }
+})();
+
+async function handleLogin() {
+  const btn = document.getElementById('loginBtn');
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value;
+  if (!username || !password) { showBanner('err', '&#9888;', 'Please enter username and password.'); return; }
+  hideBanner();
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span><span>Signing in...</span>';
+
+  try {
+    const res = await fetch(API_BASE + '/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    });
+    const data = await res.json();
+    if (res.ok && data.token) {
+      if (data.user.role !== 'teacher') {
+        showBanner('err', '&#9888;', 'Teacher access only. This account does not have teacher privileges.');
+        btn.disabled = false; btn.innerHTML = '<span>Sign In to Dashboard</span><span class="arr">&#8594;</span>';
+        return;
+      }
+      localStorage.setItem('kalinabiri_token', data.token);
+      localStorage.setItem('kalinabiri_user', JSON.stringify(data.user));
+      localStorage.setItem('kalinabiri_role', data.user.role);
+      showBanner('ok', '&#9989;', 'Login successful — loading dashboard...');
+      setTimeout(() => { window.location.href = '/teacher-dashboard/'; }, 600);
+    } else {
+      showBanner('err', '&#9888;', data.error || 'Invalid credentials.');
+      btn.disabled = false; btn.innerHTML = '<span>Sign In to Dashboard</span><span class="arr">&#8594;</span>';
+    }
+  } catch(e) {
+    showBanner('err', '&#9888;', 'Cannot connect to server. Please try again.');
+    btn.disabled = false; btn.innerHTML = '<span>Sign In to Dashboard</span><span class="arr">&#8594;</span>';
+  }
+}
+
+async function handleRegister() {
+  const btn = document.getElementById('regBtn');
+  const fullName = document.getElementById('regName').value.trim();
+  const username = document.getElementById('regUsername').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const phone = document.getElementById('regPhone').value.trim();
+  const password = document.getElementById('regPassword').value;
+  const subjects = document.getElementById('regSubjects').value.trim();
+
+  if (!fullName || !username || !email || !phone || !password) {
+    showBanner('err', '&#9888;', 'All fields are required.'); return;
+  }
+  if (password.length < 6) {
+    showBanner('err', '&#9888;', 'Password must be at least 6 characters.'); return;
+  }
+
+  hideBanner();
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span><span>Creating account...</span>';
+
+  try {
+    const nameParts = fullName.split(/\s+/);
+    const payload = {
+      fullName, role: 'teacher',
+      first_name: nameParts[0] || '',
+      last_name: nameParts.slice(1).join(' ') || '',
+      username, email, password, phone, subjects, subjects_taught: subjects, assignedClasses: ''
+    };
+    const res = await fetch(API_BASE + '/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (res.ok) {
+      showBanner('ok', '&#9989;', 'Registration submitted! Admin will approve your account.');
+      btn.innerHTML = '<span>Success!</span>';
+      setTimeout(() => { showTab('login'); document.getElementById('username').value = username; }, 2000);
+    } else {
+      showBanner('err', '&#9888;', data.error || 'Registration failed.');
+      btn.disabled = false; btn.innerHTML = '<span>Create Account</span><span class="arr">&#8594;</span>';
+    }
+  } catch(e) {
+    showBanner('err', '&#9888;', 'Network error. Please try again.');
+    btn.disabled = false; btn.innerHTML = '<span>Create Account</span><span class="arr">&#8594;</span>';
+  }
+}
+
+document.getElementById('password').addEventListener('keydown', function(e) { if (e.key === 'Enter') handleLogin(); });
+</script>
+<script>
+(function(){
+  var canvas=document.getElementById('webgl-bg');
+  if(!canvas||!window.THREE)return;
+  try {
+    var renderer=new THREE.WebGLRenderer({canvas:canvas,alpha:true,antialias:true});
+    renderer.setSize(window.innerWidth,window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+    var scene=new THREE.Scene();
+    var camera=new THREE.PerspectiveCamera(60,window.innerWidth/window.innerHeight,.1,1000);
+    camera.position.z=30;
+    var geo=new THREE.BufferGeometry();
+    var count=window.innerWidth<768?500:1500;
+    var pos=new Float32Array(count*3);
+    var col=new Float32Array(count*3);
+    var colors=[[0,.96,.83],[.48,.18,.97],[.97,.18,1],[1,.84,0]];
+    for(var i=0;i<count*3;i++){pos[i]=(Math.random()-.5)*80;var c=colors[Math.floor(Math.random()*colors.length)];col[i]=c[i%3]}
+    geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+    geo.setAttribute('color',new THREE.BufferAttribute(col,3));
+    var mat=new THREE.PointsMaterial({size:.18,vertexColors:true,transparent:true,opacity:.85,sizeAttenuation:true});
+    scene.add(new THREE.Points(geo,mat));
+    var mouse={x:0,y:0};
+    document.addEventListener('mousemove',function(e){mouse.x=(e.clientX/window.innerWidth)*2-1;mouse.y=-(e.clientY/window.innerHeight)*2+1});
+    function animate(){requestAnimationFrame(animate);camera.position.x+=(mouse.x*5-camera.position.x)*.03;camera.position.y+=(mouse.y*5-camera.position.y)*.03;camera.lookAt(scene.position);renderer.render(scene,camera)}
+    animate();
+    window.addEventListener('resize',function(){camera.aspect=window.innerWidth/window.innerHeight;camera.updateProjectionMatrix();renderer.setSize(window.innerWidth,window.innerHeight)});
+  } catch(e){}
+})();
+</script>
+
+    // Mobile Menu Toggle
+    function toggleMobileMenu() {
+      document.getElementById('navLinks').classList.toggle('mobile-open');
+      document.getElementById('mobileBtn').classList.toggle('active');
+    }
+
+</script>
+</body>
+</html>

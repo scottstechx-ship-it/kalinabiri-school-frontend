@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Admin Dashboard | Kalinabiri SS</title>
+    <link rel="icon" type="image/x-icon" href="/assets/images/logo.ico">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0a1f0a; --primary-light: #122412; --primary-dark: #050f05;
+            --accent: #4ade80; --accent-dark: #22c55e; --accent-light: #86efac;
+            --bg: #0d1a0d; --bg-card: #142814; --bg-hover: #1a3a1a;
+            --text: #e8f5e8; --text-muted: #8ba88b; --border: #2a4a2a;
+            --danger: #ef4444; --warning: #f59e0b; --success: #22c55e; --info: #3b82f6;
+            --sidebar-width: 280px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+        a { color: var(--accent); text-decoration: none; }
+        button { cursor: pointer; font-family: inherit; }
+        input, select, textarea { font-family: inherit; }
+        .hidden { display: none !important; }
+        .text-muted { color: var(--text-muted); }
+        .text-sm { font-size: 13px; }
+        .mt-4 { margin-top: 16px; } .mb-4 { margin-bottom: 16px; }
+        .flex { display: flex; } .flex-1 { flex: 1; } .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; } .gap-2 { gap: 8px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+        .login-screen { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+        .login-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 48px; width: 100%; max-width: 420px; box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
+        .login-logo { text-align: center; margin-bottom: 32px; }
+        .login-logo .icon { font-size: 48px; color: var(--accent); margin-bottom: 12px; }
+        .login-logo h1 { font-size: 28px; font-weight: 700; color: var(--accent); margin-bottom: 8px; }
+        .login-logo p { color: var(--text-muted); font-size: 14px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: 500; color: var(--text-muted); }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px 16px; background: var(--primary); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 14px; transition: border-color 0.2s; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--accent); }
+        .form-group textarea { resize: vertical; min-height: 100px; }
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 24px; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; transition: all 0.2s; }
+        .btn-primary { background: var(--accent); color: var(--primary); }
+        .btn-primary:hover { background: var(--accent-dark); transform: translateY(-1px); }
+        .btn-secondary { background: var(--bg-hover); color: var(--text); border: 1px solid var(--border); }
+        .btn-secondary:hover { background: var(--primary-light); }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { background: #dc2626; }
+        .btn-sm { padding: 8px 16px; font-size: 13px; }
+        .btn-block { width: 100%; }
+        .btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
+        .btn-ghost:hover { background: var(--bg-hover); }
+
+        .app-layout { display: flex; min-height: 100vh; }
+        .sidebar { width: var(--sidebar-width); background: var(--primary); border-right: 1px solid var(--border); position: fixed; height: 100vh; display: flex; flex-direction: column; z-index: 100; }
+        .sidebar-header { padding: 24px 20px; border-bottom: 1px solid var(--border); }
+        .sidebar-logo { font-size: 20px; font-weight: 700; color: var(--accent); display: flex; align-items: center; gap: 10px; }
+        .sidebar-logo i { font-size: 24px; }
+        .sidebar-subtitle { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+        .sidebar-nav { flex: 1; padding: 16px 12px; overflow-y: auto; }
+        .nav-section { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; padding: 8px 12px; margin-top: 16px; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px; color: var(--text-muted); font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; margin-bottom: 4px; }
+        .nav-item:hover { background: var(--bg-hover); color: var(--text); }
+        .nav-item.active { background: var(--accent); color: var(--primary); }
+        .nav-item.active i { color: var(--primary); }
+        .nav-item i { width: 20px; text-align: center; }
+        .nav-badge { margin-left: auto; background: var(--danger); color: white; font-size: 10px; font-weight: 600; min-width: 18px; height: 18px; border-radius: 9px; display: flex; align-items: center; justify-content: center; padding: 0 5px; }
+        .sidebar-footer { padding: 16px 12px; border-top: 1px solid var(--border); }
+        .user-info { display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg-card); border-radius: 8px; margin-bottom: 12px; }
+        .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: 600; color: var(--primary); font-size: 16px; flex-shrink: 0; }
+        .user-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+        .user-details { flex: 1; min-width: 0; }
+        .user-name { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .user-role { font-size: 12px; color: var(--text-muted); }
+
+        .main-content { flex: 1; margin-left: var(--sidebar-width); display: flex; flex-direction: column; }
+        .topbar { background: var(--primary); border-bottom: 1px solid var(--border); padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
+        .topbar-left { display: flex; align-items: center; gap: 12px; }
+        .page-title { font-size: 20px; font-weight: 600; }
+        .topbar-actions { display: flex; align-items: center; gap: 16px; }
+        .search-box { position: relative; }
+        .search-box input { width: 280px; padding: 10px 16px 10px 40px; background: var(--bg-hover); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 14px; }
+        .search-box input:focus { outline: none; border-color: var(--accent); }
+        .search-box svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: var(--text-muted); }
+        .notification-bell { position: relative; cursor: pointer; padding: 8px; border-radius: 8px; transition: background 0.2s; }
+        .notification-bell:hover { background: var(--bg-hover); }
+        .notification-badge { position: absolute; top: 4px; right: 4px; background: var(--danger); color: white; font-size: 10px; font-weight: 600; min-width: 18px; height: 18px; border-radius: 9px; display: flex; align-items: center; justify-content: center; padding: 0 5px; }
+        .notifications-dropdown { position: absolute; top: 100%; right: 0; width: 360px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.4); display: none; z-index: 200; margin-top: 8px; }
+        .notifications-dropdown.show { display: block; }
+        .notifications-header { padding: 16px; border-bottom: 1px solid var(--border); font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+        .notifications-list { max-height: 400px; overflow-y: auto; }
+        .notification-item { padding: 12px 16px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.2s; }
+        .notification-item:hover { background: var(--bg-hover); }
+        .notification-title { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+        .notification-time { font-size: 12px; color: var(--text-muted); }
+
+        .page-content { flex: 1; padding: 24px; }
+        .page-header { margin-bottom: 24px; }
+        .page-header h2 { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+        .page-header p { color: var(--text-muted); font-size: 14px; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        .stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; transition: transform 0.2s; }
+        .stat-card:hover { transform: translateY(-2px); }
+        .stat-icon { width: 48px; height: 48px; border-radius: 10px; background: var(--bg-hover); display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
+        .stat-icon i { font-size: 24px; color: var(--accent); }
+        .stat-icon.green i { color: var(--success); }
+        .stat-icon.blue i { color: var(--info); }
+        .stat-icon.gold i { color: var(--warning); }
+        .stat-icon.red i { color: var(--danger); }
+        .stat-icon.purple i { color: #a855f7; }
+        .stat-value { font-size: 32px; font-weight: 700; margin-bottom: 4px; }
+        .stat-label { font-size: 14px; color: var(--text-muted); }
+
+        .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+        .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+        .card-title { font-size: 18px; font-weight: 600; }
+
+        .table-wrapper { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border); }
+        th { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        td { font-size: 14px; }
+        tbody tr:hover { background: var(--bg-hover); }
+
+        .badge { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+        .badge-success { background: rgba(74, 222, 128, 0.15); color: var(--accent); }
+        .badge-warning { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+        .badge-danger { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+        .badge-info { background: rgba(59, 130, 246, 0.15); color: var(--info); }
+        .badge-purple { background: rgba(168, 85, 247, 0.15); color: #a855f7; }
+
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 300; padding: 20px; }
+        .modal-overlay.show { display: flex; }
+        .modal { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; width: 100%; max-width: 560px; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column; }
+        .modal-lg { max-width: 800px; }
+        .modal-xl { max-width: 1000px; }
+        .modal-header { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+        .modal-title { font-size: 18px; font-weight: 600; }
+        .modal-close { width: 32px; height: 32px; border: none; background: var(--bg-hover); border-radius: 8px; color: var(--text); cursor: pointer; }
+        .modal-close:hover { background: var(--danger); color: white; }
+        .modal-body { padding: 24px; overflow-y: auto; flex: 1; }
+        .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 12px; }
+
+        .form-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+        .form-full { grid-column: 1 / -1; }
+
+        .comm-header { padding: 16px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .comm-body { flex: 1; display: flex; overflow: hidden; }
+        .comm-sidebar { width: 380px; border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
+        .comm-search { padding: 16px; border-bottom: 1px solid var(--border); }
+        .comm-search input { width: 100%; padding: 10px 14px; background: var(--primary); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 14px; }
+        .comm-conversations { flex: 1; overflow-y: auto; }
+        .comm-chat { flex: 1; display: flex; flex-direction: column; background: var(--bg); }
+        .comm-chat-header { padding: 16px 24px; border-bottom: 1px solid var(--border); background: var(--bg-card); display: flex; align-items: center; justify-content: space-between; }
+        .comm-messages { flex: 1; overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+        .comm-empty { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); text-align: center; padding: 24px; }
+        .comm-input-area { padding: 16px 24px; border-top: 1px solid var(--border); background: var(--bg-card); }
+        .comm-message { display: flex; gap: 8px; max-width: 75%; animation: slideIn 0.2s ease; }
+        .comm-message.own { flex-direction: row-reverse; align-self: flex-end; }
+        .comm-message .avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; flex-shrink: 0; margin-top: 2px; }
+        .comm-message.own .avatar { background: var(--accent); color: var(--primary); }
+        .comm-message:not(.own) .avatar { background: var(--border); color: var(--text-muted); }
+        .comm-message .bubble { background: var(--bg-card); color: var(--text); padding: 10px 14px; border-radius: 18px 18px 18px 4px; }
+        .comm-message.own .bubble { background: var(--accent); color: var(--primary); border-radius: 18px 18px 4px 18px; }
+        .comm-message .bubble .sender { font-size: 11px; font-weight: 500; color: var(--text-muted); margin-bottom: 2px; }
+        .comm-message.own .bubble .sender { color: var(--primary); opacity: 0.7; }
+        .comm-message .bubble .meta { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; font-size: 10px; color: var(--text-muted); }
+        .comm-message.own .bubble .meta { color: var(--primary); opacity: 0.7; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        .toast-container { position: fixed; top: 24px; right: 24px; z-index: 1000; display: flex; flex-direction: column; gap: 12px; }
+        .toast { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.4); display: flex; align-items: center; gap: 12px; min-width: 280px; animation: slideInRight 0.3s ease; }
+        .toast.success { border-left: 4px solid var(--success); }
+        .toast.error { border-left: 4px solid var(--danger); }
+        .toast.info { border-left: 4px solid var(--info); }
+        @keyframes slideInRight { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+
+        .spinner { width: 24px; height: 24px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-overlay { display: flex; align-items: center; justify-content: center; padding: 32px; }
+        .empty-state { padding: 48px 24px; text-align: center; color: var(--text-muted); }
+
+        .mobile-toggle { display: none; background: transparent; border: none; color: var(--text); font-size: 20px; padding: 8px; }
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); transition: transform 0.3s; }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+            .mobile-toggle { display: block; }
+            .search-box input { width: 180px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- LOGIN SCREEN -->
+    <div id="loginScreen" class="login-screen">
+        <div class="login-card">
+            <div class="login-logo">
+                <img src="/assets/images/logo.png" alt="Kalinabiri SS" style="width:64px;height:64px;border-radius:16px;object-fit:cover;border:2px solid var(--accent);margin-bottom:16px;">
+                <h1>Super Admin</h1>
+                <p>Kalinabiri Secondary School</p>
+            </div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="loginUsername" placeholder="admin" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter password" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-sign-in-alt"></i> Sign In</button>
+                <p id="loginError" class="text-sm" style="color: var(--danger); margin-top: 12px; display: none;"></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN APP -->
+    <div id="dashboard" class="app-layout hidden">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo"><img src="/assets/images/logo.png" alt="Kalinabiri SS" style="width:32px;height:32px;border-radius:8px;object-fit:cover;margin-right:10px;"> <span>Super Admin</span></div>
+                <div class="sidebar-subtitle">Kalinabiri SS</div>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section">Overview</div>
+                <div class="nav-item active" data-page="overview"><i class="fas fa-chart-line"></i> Dashboard</div>
+                <div class="nav-item" data-page="analytics"><i class="fas fa-chart-pie"></i> Analytics</div>
+
+                <div class="nav-section">Communication</div>
+                <div class="nav-item" data-page="communication"><i class="fas fa-comments"></i> Communication Center</div>
+                <div class="nav-item" data-page="announcements"><i class="fas fa-bullhorn"></i> Announcements</div>
+                <div class="nav-item" data-page="emergency"><i class="fas fa-triangle-exclamation"></i> Emergency Alerts</div>
+
+                <div class="nav-section">People</div>
+                <div class="nav-item" data-page="users"><i class="fas fa-users"></i> User Management</div>
+                <div class="nav-item" data-page="directory"><i class="fas fa-address-book"></i> Directory</div>
+                <div class="nav-item" data-page="moderation"><i class="fas fa-gavel"></i> Moderation</div>
+                <div class="nav-item" data-page="audit"><i class="fas fa-clipboard-list"></i> Audit Logs</div>
+
+                <div class="nav-section">School</div>
+                <div class="nav-item" data-page="classes"><i class="fas fa-school"></i> Classes & Subjects</div>
+                <div class="nav-item" data-page="attendance"><i class="fas fa-calendar-check"></i> Attendance</div>
+                <div class="nav-item" data-page="timetable"><i class="fas fa-table"></i> Timetable</div>
+                <div class="nav-item" data-page="events"><i class="fas fa-calendar-day"></i> Events</div>
+                <div class="nav-item" data-page="admissions"><i class="fas fa-user-plus"></i> Admissions</div>
+
+                <div class="nav-section">System</div>
+                <div class="nav-item" data-page="settings"><i class="fas fa-cog"></i> Settings</div>
+                <div class="nav-item" data-page="profile"><i class="fas fa-user-circle"></i> Profile</div>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">A</div>
+                    <div class="user-details">
+                        <div class="user-name" id="userName">Admin</div>
+                        <div class="user-role">Super Admin</div>
+                    </div>
+                </div>
+                <button class="btn btn-secondary btn-block" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <div class="topbar">
+                <div class="topbar-left">
+                    <button class="mobile-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+                    <h1 class="page-title" id="pageTitle">Dashboard</h1>
+                </div>
+                <div class="topbar-actions">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search users, messages, files..." id="globalSearch" onkeyup="handleGlobalSearch(event)">
+                    </div>
+                    <div class="notification-bell" onclick="toggleNotifications()">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge hidden" id="notifBadge">0</span>
+                        <div class="notifications-dropdown" id="notifDropdown">
+                            <div class="notifications-header">
+                                <span>Notifications</span>
+                                <button class="btn btn-sm btn-ghost" onclick="markAllRead()">Mark all read</button>
+                            </div>
+                            <div class="notifications-list" id="notifList"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="page-content" id="pageContent"></div>
+        </main>
+    </div>
+
+    <!-- MODAL -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal" id="modal">
+            <div class="modal-header">
+                <div class="modal-title" id="modalTitle">Modal</div>
+                <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+            <div class="modal-footer" id="modalFooter"></div>
+        </div>
+    </div>
+
+    <!-- TOAST CONTAINER -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="/shared/communication-center.js"></script>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script>
+        const API = (() => {
+            const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+            return isLocal ? 'http://localhost:3000/api' : '/api';
+        })();
+        const TOKEN = () => localStorage.getItem('admin_token');
+        let currentUser = null;
+        let commCenter = null;
+        let currentPage = 'overview';
+
+        const $ = (sel) => document.querySelector(sel);
+        const $$ = (sel) => document.querySelectorAll(sel);
+
+        // API CALL
+        async function apiCall(path, options = {}) {
+            const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
+            const token = TOKEN();
+            if (token) headers['Authorization'] = 'Bearer ' + token;
+            const res = await fetch(API + path, { ...options, headers: { ...headers, ...(options.headers || {}) } });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) throw new Error(data.error || data.message || 'Request failed');
+            return data;
+        }
+
+        // TOAST
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = 'toast ' + type;
+            toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i><span>${escapeHtml(message)}</span>`;
+            $('#toastContainer').appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        }
+
+        function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+
+        // LOGIN
+        $('#loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = $('#loginUsername').value.trim();
+            const password = $('#loginPassword').value;
+            try {
+                const data = await apiCall('/auth/login', { method: 'POST', body: JSON.stringify({ username, password }) });
+                if (data.user.role !== 'super_admin' && data.user.role !== 'admin') {
+                    throw new Error('Access denied. Super admin only.');
+                }
+                localStorage.setItem('admin_token', data.token);
+                currentUser = data.user;
+                showDashboard();
+            } catch (err) {
+                $('#loginError').textContent = err.message;
+                $('#loginError').style.display = 'block';
+            }
+        });
+
+        function logout() {
+            localStorage.removeItem('admin_token');
+            location.reload();
+        }
+
+        async function showDashboard() {
+            $('#loginScreen').classList.add('hidden');
+            $('#dashboard').classList.remove('hidden');
+            // Load user info
+            try {
+                currentUser = await apiCall('/auth/me');
+            } catch (err) {
+                showToast('Session expired', 'error');
+                logout();
+                return;
+            }
+            const initials = (currentUser.first_name?.[0] || 'A') + (currentUser.last_name?.[0] || '');
+            $('#userAvatar').textContent = initials.toUpperCase();
+            $('#userName').textContent = `${currentUser.first_name} ${currentUser.last_name}`;
+            loadNotifications();
+            loadPage('overview');
+        }
+
+        // NAVIGATION
+        $$('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const page = item.dataset.page;
+                $$('.nav-item').forEach(n => n.classList.remove('active'));
+                item.classList.add('active');
+                loadPage(page);
+            });
+        });
+
+        async function loadPage(page) {
+            currentPage = page;
+            const titles = { overview: 'Dashboard', analytics: 'Analytics', communication: 'Communication Center',
+                announcements: 'Announcements', emergency: 'Emergency Alerts', users: 'User Management',
+                directory: 'Directory', moderation: 'Moderation', audit: 'Audit Logs', classes: 'Classes & Subjects',
+                attendance: 'Attendance', timetable: 'Timetable', events: 'Events', admissions: 'Admissions',
+                settings: 'Settings', profile: 'Profile' };
+            $('#pageTitle').textContent = titles[page] || page;
+            const content = $('#pageContent');
+            content.innerHTML = '<div class="loading-overlay"><div class="spinner"></div></div>';
+            try {
+                switch (page) {
+                    case 'overview': await renderOverview(content); break;
+                    case 'analytics': await renderAnalytics(content); break;
+                    case 'communication': await renderCommunication(content); break;
+                    case 'announcements': await renderAnnouncements(content); break;
+                    case 'emergency': await renderEmergency(content); break;
+                    case 'users': await renderUsers(content); break;
+                    case 'directory': await renderDirectory(content); break;
+                    case 'moderation': await renderModeration(content); break;
+                    case 'audit': await renderAudit(content); break;
+                    case 'classes': await renderClasses(content); break;
+                    case 'attendance': await renderAttendance(content); break;
+                    case 'timetable': await renderTimetable(content); break;
+                    case 'events': await renderEvents(content); break;
+                    case 'admissions': await renderAdmissions(content); break;
+                    case 'settings': await renderSettings(content); break;
+                    case 'profile': await renderProfile(content); break;
+                }
+            } catch (err) {
+                content.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle" style="font-size:48px;color:var(--danger);margin-bottom:16px;"></i><p>${err.message}</p></div>`;
+            }
+        }
+
+        // ===== OVERVIEW =====
+        async function renderOverview(c) {
+            const [stats, recent, announcements] = await Promise.all([
+                apiCall('/admin/stats').catch(() => ({})),
+                apiCall('/admin/activity?limit=8').catch(() => []),
+                apiCall('/announcements?limit=5').catch(() => [])
+            ]);
+            c.innerHTML = `
+                <div class="page-header"><h2>Welcome back, ${currentUser.first_name}</h2><p>Platform overview for Kalinabiri SS</p></div>
+                <div class="stats-grid">
+                    <div class="stat-card"><div class="stat-icon green"><i class="fas fa-user-graduate"></i></div><div class="stat-value">${stats.students || 0}</div><div class="stat-label">Students</div></div>
+                    <div class="stat-card"><div class="stat-icon blue"><i class="fas fa-chalkboard-teacher"></i></div><div class="stat-value">${stats.teachers || 0}</div><div class="stat-label">Teachers</div></div>
+                    <div class="stat-card"><div class="stat-icon gold"><i class="fas fa-users"></i></div><div class="stat-value">${stats.parents || 0}</div><div class="stat-label">Parents</div></div>
+                    <div class="stat-card"><div class="stat-icon purple"><i class="fas fa-comments"></i></div><div class="stat-value">${stats.conversations || 0}</div><div class="stat-label">Conversations</div></div>
+                    <div class="stat-card"><div class="stat-icon green"><i class="fas fa-circle-user"></i></div><div class="stat-value">${stats.online || 0}</div><div class="stat-label">Online Now</div></div>
+                    <div class="stat-card"><div class="stat-icon red"><i class="fas fa-bullhorn"></i></div><div class="stat-value">${stats.announcements || 0}</div><div class="stat-label">Announcements</div></div>
+                </div>
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-header"><h3 class="card-title">Recent Activity</h3></div>
+                        <div>${(recent || []).map(a => `<div style="padding:12px 0;border-bottom:1px solid var(--border);"><strong>${escapeHtml(a.user_name || 'User')}</strong> ${escapeHtml(a.action || '')}<div class="text-sm text-muted">${new Date(a.created_at).toLocaleString()}</div></div>`).join('') || '<div class="empty-state">No recent activity</div>'}</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><div class="flex justify-between items-center"><h3 class="card-title">Latest Announcements</h3><button class="btn btn-sm btn-primary" onclick="quickAnnouncement()"><i class="fas fa-plus"></i> New</button></div></div>
+                        <div>${(announcements || []).map(a => `<div style="padding:12px 0;border-bottom:1px solid var(--border);"><strong>${escapeHtml(a.title)}</strong>${a.priority === 'high' ? ' <span class="badge badge-danger">High</span>' : ''}<div class="text-sm text-muted">${new Date(a.created_at).toLocaleDateString()}</div></div>`).join('') || '<div class="empty-state">No announcements</div>'}</div>
+                    </div>
+                </div>`;
+        }
+
+        // ===== ANALYTICS =====
+        async function renderAnalytics(c) {
+            const data = await apiCall('/admin/analytics').catch(() => ({}));
+            c.innerHTML = `
+                <div class="page-header"><h2>Analytics</h2><p>Platform insights and trends</p></div>
+                <div class="stats-grid">
+                    <div class="stat-card"><div class="stat-icon blue"><i class="fas fa-paper-plane"></i></div><div class="stat-value">${data.messages_today || 0}</div><div class="stat-label">Messages Today</div></div>
+                    <div class="stat-card"><div class="stat-icon green"><i class="fas fa-calendar-week"></i></div><div class="stat-value">${data.messages_week || 0}</div><div class="stat-label">This Week</div></div>
+                    <div class="stat-card"><div class="stat-icon gold"><i class="fas fa-calendar"></i></div><div class="stat-value">${data.messages_month || 0}</div><div class="stat-label">This Month</div></div>
+                    <div class="stat-card"><div class="stat-icon purple"><i class="fas fa-circle-user"></i></div><div class="stat-value">${data.active_users || 0}</div><div class="stat-label">Active Users</div></div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><h3 class="card-title">Communication Trends</h3></div>
+                    <div id="trendsChart"><div class="empty-state">Chart data loading...</div></div>
+                </div>`;
+        }
+
+        // ===== COMMUNICATION CENTER =====
+        async function renderCommunication(c) {
+            c.innerHTML = `
+                <div class="card" style="padding:0; height: calc(100vh - 180px); display: flex; flex-direction: column;">
+                    <div class="comm-header">
+                        <h3 class="card-title">Communication Center</h3>
+                        <div class="flex gap-2">
+                            <button class="btn btn-sm btn-primary" onclick="openNewConversation()"><i class="fas fa-plus"></i> New Message</button>
+                            <button class="btn btn-sm btn-secondary" onclick="refreshConversations()"><i class="fas fa-sync"></i></button>
+                        </div>
+                    </div>
+                    <div class="comm-body">
+                        <div class="comm-sidebar">
+                            <div class="comm-search"><input type="text" id="commSearch" placeholder="Search conversations..." oninput="filterConversations(this.value)"></div>
+                            <div class="comm-conversations" id="commConversations"><div class="loading-overlay"><div class="spinner"></div></div></div>
+                        </div>
+                        <div class="comm-chat">
+                            <div class="comm-chat-header" id="commChatHeader">
+                                <div><strong>Select a conversation</strong><div class="text-sm text-muted">Start messaging</div></div>
+                            </div>
+                            <div class="comm-messages" id="commMessages"><div class="comm-empty"><i class="fas fa-comments" style="font-size:48px;opacity:0.3;margin-bottom:16px;"></i><p>Select a conversation to start messaging</p></div></div>
+                            <div class="comm-input-area hidden" id="commInputArea">
+                                <div class="flex gap-2 items-center">
+                                    <textarea id="commMessageInput" placeholder="Type a message..." rows="1" style="flex:1;resize:none;min-height:44px;max-height:120px;"></textarea>
+                                    <button class="btn btn-primary" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+            if (!commCenter) {
+                commCenter = new CommunicationCenter({
+                    apiBase: API,
+                    currentUser: currentUser,
+                    onConversationChange: (convs) => renderConversationList(convs),
+                    onMessage: (msg) => handleNewMessage(msg),
+                    onTyping: (users) => updateTypingIndicator(users),
+                    onError: (err) => showToast(err.message, 'error')
+                });
+            }
+            const socket = io(API.replace('/api', ''), { auth: { token: TOKEN() }, transports: ['websocket', 'polling'] });
+            await commCenter.init(socket, currentUser);
+            $('#commMessageInput').addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+            });
+        }
+
+        function renderConversationList(convs) {
+            const container = $('#commConversations');
+            if (!container) return;
+            if (!convs || convs.length === 0) {
+                container.innerHTML = '<div class="empty-state">No conversations yet</div>';
+                return;
+            }
+            container.innerHTML = convs.map(conv => {
+                const other = conv.members?.find(m => m.id !== currentUser.id);
+                const name = conv.type === 'direct' && other ? `${other.first_name} ${other.last_name}` : conv.name || 'Group';
+                const unread = conv.unread_count || 0;
+                const last = conv.messages?.[0];
+                const preview = last?.content?.substring(0, 50) || 'No messages';
+                return `<div class="nav-item" data-conv-id="${conv.id}" onclick="selectConversation('${conv.id}')" style="padding:12px 16px;border-bottom:1px solid var(--border);">
+                    <div class="user-avatar" style="width:44px;height:44px;">${(name[0] || '?').toUpperCase()}</div>
+                    <div style="flex:1;min-width:0;">
+                        <div class="flex justify-between items-center"><strong>${escapeHtml(name)}</strong><span class="text-sm text-muted">${last ? new Date(last.created_at).toLocaleDateString() : ''}</span></div>
+                        <div class="flex justify-between items-center"><span class="text-sm text-muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(preview)}</span>${unread ? `<span class="nav-badge">${unread}</span>` : ''}</div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function filterConversations(q) {
+            $$('#commConversations .nav-item').forEach(item => {
+                const text = item.textContent.toLowerCase();
+                item.style.display = text.includes(q.toLowerCase()) ? '' : 'none';
+            });
+        }
+
+        async function selectConversation(convId) {
+            if (!commCenter) return;
+            const conv = await commCenter.getConversation(convId);
+            if (!conv) return;
+            commCenter.setActiveConversation(conv);
+            const other = conv.members?.find(m => m.id !== currentUser.id);
+            const name = conv.type === 'direct' && other ? `${other.first_name} ${other.last_name}` : conv.name || 'Group';
+            $('#commChatHeader').innerHTML = `<div><strong>${escapeHtml(name)}</strong><div class="text-sm text-muted">${conv.members?.length || 0} members</div></div>`;
+            $('#commInputArea').classList.remove('hidden');
+            const messages = await commCenter.loadMessages(convId);
+            const container = $('#commMessages');
+            container.innerHTML = messages.map(m => createMessageHtml(m)).join('');
+            container.scrollTop = container.scrollHeight;
+            if (commCenter.socket) commCenter.socket.emit('join_conversation', convId);
+        }
+
+        function createMessageHtml(msg) {
+            const isOwn = msg.sender_id === currentUser.id;
+            const sender = `${msg.sender_first || ''} ${msg.sender_last || ''}`.trim();
+            return `<div class="comm-message ${isOwn ? 'own' : ''}">
+                <div class="avatar">${(sender[0] || '?').toUpperCase()}</div>
+                <div class="bubble"><div class="sender">${escapeHtml(sender)}</div><div>${escapeHtml(msg.content)}</div><div class="meta"><span>${new Date(msg.created_at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</span><span>${msg.read_count > 0 ? '✓✓' : '✓'}</span></div></div>
+            </div>`;
+        }
+
+        async function sendMessage() {
+            const input = $('#commMessageInput');
+            if (!input || !input.value.trim() || !commCenter?.activeConversation) return;
+            const content = input.value.trim();
+            input.value = '';
+            try {
+                await commCenter.sendMessage(commCenter.activeConversation.id, content);
+            } catch (e) { showToast(e.message, 'error'); }
+        }
+
+        function handleNewMessage(msg) {
+            if (commCenter?.activeConversation?.id === msg.conversation_id) {
+                $('#commMessages').insertAdjacentHTML('beforeend', createMessageHtml(msg));
+                $('#commMessages').scrollTop = $('#commMessages').scrollHeight;
+            }
+        }
+
+        function updateTypingIndicator(users) {
+            const convId = commCenter?.activeConversation?.id;
+            const u = convId ? users.get(convId)?.users || [] : [];
+            $('#commTyping')?.remove();
+            if (u.length && commCenter?.activeConversation) {
+                const div = document.createElement('div');
+                div.id = 'commTyping';
+                div.className = 'text-sm text-muted';
+                div.style.padding = '4px 24px';
+                div.textContent = u.length === 1 ? `${u[0]} is typing...` : `${u.length} people typing...`;
+                $('#commMessages').after(div);
+            }
+        }
+
+        async function openNewConversation() {
+            const users = await apiCall('/directory?limit=100').catch(() => []);
+            openModal('New Conversation', `
+                <div class="form-group"><label>Type</label><select id="newConvType" onchange="toggleConvType()"><option value="direct">Direct Message</option><option value="group">Group Chat</option></select></div>
+                <div class="form-group hidden" id="newConvNameGroup"><label>Group Name</label><input type="text" id="newConvName" placeholder="Enter group name"></div>
+                <div class="form-group"><label>Select Users</label><input type="text" placeholder="Search..." oninput="filterNewUsers(this.value)" style="margin-bottom:8px;"><div id="newConvUserList" style="max-height:300px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;"></div></div>
+            `, `<button class="btn btn-secondary" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="createNewConversation()">Create</button>`);
+            $('#newConvUserList').innerHTML = (users || []).map(u => `<label class="nav-item" style="cursor:pointer;"><input type="checkbox" value="${u.id}" class="new-conv-user" style="width:18px;height:18px;"><div class="user-avatar" style="width:36px;height:36px;">${(u.first_name?.[0] || '?').toUpperCase()}</div><div><div>${escapeHtml(u.first_name + ' ' + u.last_name)}</div><div class="text-sm text-muted">${escapeHtml(u.role)}</div></div></label>`).join('');
+        }
+
+        function toggleConvType() {
+            $('#newConvNameGroup').classList.toggle('hidden', $('#newConvType').value !== 'group');
+        }
+
+        function filterNewUsers(q) {
+            $$('#newConvUserList .nav-item').forEach(item => {
+                item.style.display = item.textContent.toLowerCase().includes(q.toLowerCase()) ? '' : 'none';
+            });
+        }
+
+        async function createNewConversation() {
+            const type = $('#newConvType').value;
+            const name = type === 'group' ? $('#newConvName').value : '';
+            const ids = $$('.new-conv-user:checked').map(cb => Number(cb.value));
+            if (!ids.length) return showToast('Select users', 'error');
+            try {
+                const conv = await commCenter.createConversation(type, name, '', ids);
+                closeModal();
+                await selectConversation(conv.id);
+                showToast('Conversation created', 'success');
+            } catch (e) { showToast(e.message, 'error'); }
+        }
+
+        async function refreshConversations() {
+            if (commCenter) await commCenter.loadConversations();
+        }
+
+        // ===== ANNOUNCEMENTS =====
+        async function renderAnnouncements(c) {
+            const [list, audiences] = await Promise.all([
+                apiCall('/announcements').catch(() => []),
+                apiCall('/announcements/audiences').catch(() => [])
+            ]);
+            c.innerHTML = `
+                <div class="page-header flex justify-between items-center"><div><h2>Announcements</h2><p>School-wide and targeted announcements</p></div><button class="btn btn-primary" onclick="createAnnouncement()"><i class="fas fa-plus"></i> New Announcement</button></div>
+                <div class="card"><div class="table-wrapper"><table><thead><tr><th>Title</th><th>Priority</th><th>Audience</th><th>Created</th><th>Read</th><th></th></tr></thead><tbody>${(list || []).map(a => `
+                    <tr><td><strong>${escapeHtml(a.title)}</strong><div class="text-sm text-muted">${escapeHtml((a.content || '').substring(0, 80))}</div></td>
+                    <td><span class="badge badge-${a.priority === 'high' ? 'danger' : a.priority === 'medium' ? 'warning' : 'info'}">${a.priority || 'normal'}</span></td>
+                    <td>${escapeHtml(a.audience || 'all')}</td>
+                    <td>${new Date(a.created_at).toLocaleDateString()}</td>
+                    <td>${a.read_count || 0} / ${a.recipient_count || 0}</td>
+                    <td><button class="btn btn-sm btn-ghost" onclick="deleteAnnouncement('${a.id}')"><i class="fas fa-trash"></i></button></td></tr>`).join('') || '<tr><td colspan="6" class="empty-state">No announcements</td></tr>'}</tbody></table></div></div>`;
+        }
+
+        async function createAnnouncement() {
+            openModal('New Announcement', `
+                <div class="form-group"><label>Title</label><input type="text" id="annTitle" required></div>
+                <div class="form-row">
+                    <div class="form-group"><label>Priority</label><select id="annPriority"><option value="normal">Normal</option><option value="medium">Medium</option><option value="high">High</option></select></div>
+                    <div class="form-group"><label>Audience</label><select id="annAudience"><option value="all">Everyone</option><option value="students">Students</option><option value="teachers">Teachers</option><option value="parents">Parents</option><option value="staff">Staff</option></select></div>
+                </div>
+                <div class="form-group"><label>Content</label><textarea id="annContent" rows="6" required></textarea></div>
+            `, `<button class="btn btn-secondary" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="submitAnnouncement()">Publish</button>`);
+        }
+
+        async function submitAnnouncement() {
+            const payload = { title: $('#annTitle').value, content: $('#annContent').value, priority: $('#annPriority').value, audience: $('#annAudience').value };
+            if (!payload.title || !payload.content) return showToast('Title and content required', 'error');
+            try {
+                await apiCall('/announcements', { method: 'POST', body: JSON.stringify(payload) });
+                closeModal();
+                showToast('Announcement published', 'success');
+                loadPage('announcements');
+            } catch (e) { showToast(e.message, 'error'); }
+        }
+
+        async function deleteAnnouncement(id) {
+            if (!confirm('Delete this announcement?')) return;
+            try {
+                await apiCall(`/announcements/${id}`, { method: 'DELETE' });
+                showToast('Deleted', 'success');
+                loadPage('announcements');
+            } catch (e) { showToast(e.message, 'error'); }
+        }
+
+        function quickAnnouncement() { createAnnouncement(); }
+
+        // ===== EMERGENCY =====
+        async function renderEmergency(c) {
+            const alerts = await apiCall('/emergency-alerts').catch(() => []);
+            c.innerHTML = `
+                <div class="page-header flex justify-between items-center"><div><h2>Emergency Alerts</h2><p>Urgent school-wide notifications</p></div><button class="btn btn-danger" onclick="createEmergency()"><i class="fas fa-triangle-exclamation"></i> Send Emergency</button></div>
+                <div class="card"><div>${(alerts || []).map(a => `<div style="padding:16px;border-left:4px solid var(--danger);background:rgba(239,68,68,0.08);border-radius:8px;margin-bottom:12px;"><div class="flex justify-between items-center"><strong>${escapeHtml(a.title)}</strong><span class="badge badge-danger">${a.severity || 'high'}</span></div><p class="text-sm">${escapeHtml(a.message)}</p><div class="text-sm text-muted">${new Date(a.created_at).toLocaleString()}</div></div>`).join('') || '<div class="empty-state">No emergency alerts</div>'}</div></div>`;
+        }
+
+        async function createEmergency() {
+            openModal('Send Emergency Alert', `
+                <div class="form-group"><label>Title</label><input type="text" id="emTitle" required></div>
+                <div class="form-group"><label>Severity</label><select id="emSeverity"><option value="critical">Critical</option><option value="high">High</option><option value="medium">Medium</option></select></div>
+                <div class="form-group"><label>Message</label><textarea id="emMessage" rows="4" required></textarea></div>
+            `, `<button class="btn btn-secondary" onclick="closeModal()">Cancel</button><button class="btn btn-danger" onclick="submitEmergency()"><i class="fas fa-paper-plane"></i> Send</button>`);
+        }
+
+        async function submitEmergency() {
+            const payload = { title: $('#emTitle').value, message: $('#emMessage').value, severity: $('#emSeverity').value, target_audience: 'all' };
+            if (!payload.title || !payload.message) return showToast('Required', 'error');
+            try {
+                await apiCall('/emergency-alerts', { method: 'POST', body: JSON.stringify(payload) });
+                closeModal();
+                showToast('Emergency alert sent', 'success');
+                loadPage('emergency');
+            } catch (e) { showToast(e.message, 'error'); }
+        }
+
+        // ===== USERS =====
+        async function renderUsers(c) {
+            const users = await apiCall('/users').catch(() => []);
+            c.innerHTML = `
+                <div class="page-header flex justify-between items-center"><div><h2>User Management</h2><p>All users in the system</p></div><button class="btn btn-primary" onclick="createUser()"><i class="fas fa-plus"></i> Add User</button></div>
+                <div class="card"><div class="table-wrapper"><table><thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Email</th><th>Status</th><th></th></tr></thead><tbody>${(users || []).map(u => `
+                    <tr><td><strong>${escapeHtml(u.first_name + ' ' + u.last_name)}</strong></td><td>${escapeHtml(u.username)}</td><td><span class="badge badge-${u.role === 'super_admin' ? 'danger' : u.role === 'teacher' ? 'info' : 'success'}">${escapeHtml(u.role)}</span></td><td>${escapeHtml(u.email || '')}</td><td><span class="badge badge-${u.is_active ? 'success' : 'danger'}">${u.is_active ? 'Active' : 'Inactive'}</span></td><td><button class="btn btn-sm btn-ghost" onclick="editUser('${u.id}')"><i class="fas fa-edit"></i></button></td></tr>`).join('') || '<tr><td colspan="6" class="empty-state">No users</td></tr>'}</tbody></table></div></div>`;
+        }
+
+        async function createUser() {
+            openModal('Add User', `
+                <div class="form-row">
+                    <div class="form-group"><label>First Name</label><input type="text" id="uFirst" required></div>
+                    <div class="form-group"><label>Last Name</label><input type="text" id="uLast" required></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Username</label><input type="text" id="uUsername" required></div>
+                    <div class="form-group"><label>Email</label><input type="email" id="uEmail"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Role</label><select id="uRole"><option value="student">Student</option><option value="teacher">Teacher</option><option value="parent">Parent</option><option value="admin">Admin</option><option value="super_admin">Super Admin</option></select></div>
+                    <div class="form-group"><label>Password</label><input type="password" id="uPassword" required></div>
+                </div>
+            `, `<button class="btn btn-secondary" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="submitUser()">Create</button>`);
+        }
+
+        async function submitUser() {
+            const payload = { first_name: $('#uFirst').value, last_name: $('#uLast').value, username: $('#uUsername').value, email: $('#uEmail').value, role: $('#uRole').value, password: $('#uPassword').value };
+            try {
+                await apiCall('/users', { method: 'POST', body: JSON.stringify(payload) });
+                closeModal();
+                showToast('User created', 'success');
+                loadPage('users');
+            } catch (e) { showToast(e.message, 'error'); }
+        }
+
+        async function editUser(id) {
+            const u = await apiCall(`/users/${id}`).catch(() => null);
+            if (!u) return;
+            openModal('Edit User', `
+                <div class="form-row">
+                    <div class="form-group"><label>First Name</label><input type="text" id="uFirst" value="${escapeHtml(u.first_name)}"></div>
+                    <div class="form-group"><label>Last Name</label><input type="text" id="uLast" value="${escapeHtml(u.last_name)}"></div>
+                </div>
+                <div class="form-group"><label>Email</label><input type="email" id="uEmail" value="${escapeHtml(u.email || '')}"></div>
+                <div class="form-group"><label>Role</label><select id="uRole">${['student','teacher','parent','admin','super_admin'].map(r => `<option value="${r}" ${u.role === r ? 'selected' : ''}>${r}</option>`).join('')}</select></div>
+                <div class="form-group"><label>Status</label><select id="uActive"><option value="true" ${u.is_active ? 'selected' : ''}>Active</option><option value="false" ${!u.is_active ? 'selected' : ''}>Inactive</option></select></div>
+            `, `<button class="btn btn-secondary" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="updateUser('${id}')">Save</button>`);
+        }
+
+        async function updateUser(id) {
+            const payload = { first_name: $('#uFirst').value, last_name: $('#uLast').value, email: $('#uEmail').value, role: $('#uRole').value, is_active: $('#uActive').value === 'true' };
+            try {
+                await apiCall(`/users/${id}`, { method: 'PUT', body: JSON.stringify(payload) });
+                closeModal();
+                showToast('User updated', 'success');
+                loadPage('users');
+            } catch (e) { showToast(e.message, 'error'); }
+        }
+
+        // ===== DIRECTORY =====
+        async function renderDirectory(c) {
+            const users = await apiCall('/directory?limit=200').catch(() => []);
+            c.innerHTML = `
+                <div class="page-header"><h2>Directory</h2><p>Browse users by role</p></div>
+                <div class="card"><input type="text" id="dirSearch" placeholder="Search directory..." oninput="filterDirectory(this.value)" style="margin-bottom:16px;"><div class="table-wrapper"><table id="dirTable"><thead><tr><th>Name</th><th>Role</th><th>Class</th><th>Email</th><th>Phone</th></tr></thead><tbody>${(users || []).map(u => `
+                    <tr><td><strong>${escapeHtml(u.first_name + ' ' + u.last_name)}</strong></td><td><span class="badge badge-info">${escapeHtml(u.role)}</span></td><td>${escapeHtml(u.class || '-')}</td><td>${escapeHtml(u.email || '-')}</td><td>${escapeHtml(u.phone || '-')}</td></tr>`).join('') || '<tr><td colspan="5" class="empty-state">No users</td></tr>'}</tbody></table></div></div>`;
+        }
+
+        function filterDirectory(q) {
+            $$('#dirTable tbody tr').forEach(r => {
+                r.style.display = r.textContent.toLowerCase().includes(q.toLowerCase()) ? '' : 'none';
+            });
+        }
+
+        // ===== MODERATION =====
+        async function renderModeration(c) {
+            const actions = await apiCall('/admin/moderation').catch(() => []);
+            c.innerHTML = `
+                <div class="page-header flex justify-between items-center"><div><h2>Moderation</h2><p>Moderation actions on platform</p></div><button class="btn btn-primary" onclick="createModeration()"><i class="fas fa-plus"></i> New Action</button></div>
+                <div class="card"><div class="table-wrapper"><table><thead><tr><th>User</th><th>Action</th><th>Reason</th><th>By</th><th>Date</th></tr></thead><tbody>${(actions || []).map(a => `
+                    <tr><td>${escapeHtml(a.target_user_name || 'User')}</td><td><span class="badge badge-${a.action_type === 'ban' ? 'danger' : a.action_type === 'mute' ? 'warning' : 'info'}">${escapeHtml(a.action_type)}</span></td><td>${escapeHtml(a.reason || '')}</td><td>${escapeHtml(a.moderator_name || '')}</td><td>${new Date(a.created_at).toLocaleDateString()}</td></tr>`).join('') || '<tr><td colspan="5" class="empty-state">No moderation actions</td></tr>'}</tbody></table></div></div>`;
+        }
+
+        async function createModeration() {
+            const users = await apiCall('/directory?limit=100').catch(() => []);
+            openModal('New Moderation Action', `
+                <div class="form-group"><label>User</label><select id="modUser">${(users || []).map(u => `<option value="${u.id}">${escapeHtml(u.first_name + ' ' + u.last_name)} (${u.role})</option>`).join('')}</select></div>
+                <div class="form-group"><label>Action Type</label><select id="modAction"><option value="warn">Warning</option><option value="mute">Mute</option><option value="restrict">Restrict</option><option value="ban">Ban</option></select></div>
+                <div class="form-group"><label>Reason</label><textarea id="modReason" rows="3" required></textarea></div>
+            `, `<button class="btn btn-secondary" onclick="closeModal()">Cancel</button><button class="btn btn-danger" onclick="submitModeration()">Apply</button>`);
+        }
+
+        async function submitModeration() {
+            const payload = { target_user_id: Number($('#modUser').value), action_type: $('#modAction').value, reason: $('#modReason').value };
+            try {
+                await apiCall('/admin/moderation', { method: 'POST', body: JSON.stringify(payload) });
+                closeModal();
+                showToast('Action applied', 'success');
+                loadPage('moderation');
+            } catch (e) { showToast(e.message, 'error'); }
+        }
+
+        // ===== AUDIT LOGS =====
+        async function renderAudit(c) {
+            const logs = await apiCall('/admin/audit-logs').catch(() => []);
+            c.innerHTML = `
+                <div class="page-header"><h2>Audit Logs</h2><p>System activity log</p></div>
+                <div class="card"><div class="table-wrapper"><table><thead><tr><th>User</th><th>Action</th><th>Entity</th><th>IP</th><th>Timestamp</th></tr></thead><tbody>${(logs || []).map(l => `
+                    <tr><td>${escapeHtml(l.user_name || 'System')}</td><td>${escapeHtml(l.action)}</td><td>${escapeHtml(l.entity_type || '')}</td><td class="text-sm text-muted">${escapeHtml(l.ip_address || '')}</td><td>${new Date(l.created_at).toLocaleString()}</td></tr>`).join('') || '<tr><td colspan="5" class="empty-state">No logs</td></tr>'}</tbody></table></div></div>`;
+        }
+
+        // ===== CLASSES =====
+        async function renderClasses(c) {
+            const classes = await apiCall('/classes').catch(() => []);
+            const subjects = await apiCall('/subjects').catch(() => []);
+            c.innerHTML = `
+                <div class="page-header flex justify-between items-center"><div><h2>Classes & Subjects</h2><p>School structure</p></div><div class="flex gap-2"><button class="btn btn-primary" onclick="createClass()"><i class="fas fa-plus"></i> Class</button><button class="btn btn-secondary" onclick="createSubject()"><i class="fas fa-plus"></i> Subject</button></div></div>
+                <div class="grid-2">
+                    <div class="card"><h3 class="card-title">Classes</h3><div>${(classes || []).map(cl => `<div style="padding:12px;border-bottom:1px solid var(--border);"><strong>${escapeHtml(cl.name)}</strong><div class="text-sm text-muted">${escapeHtml(cl.level || '')} • ${cl.student_count || 0} students</div></div>`).join('') || '<div class="empty-state">No classes</div>'}</div></div>
+                    <div class="card"><h3 class="card-title">Subjects</h3><div>${(subjects || []).map(s => `<div style="padding:12px;border-bottom:1px solid var(--border);"><strong>${escapeHtml(s.name)}</strong><div class="text-sm text-muted">${escapeHtml(s.code || '')}</div></div>`).join('') || '<div class="empty-state">No subjects</div>'}</div></div>
+                </div>`;
+        }
+
+        async function createClass() {
+            openModal('New Class', `
+                <div class="form-group"><label>Name</label><input type="text" id="clName" placeholder="e.g. S1A"></div>
+                <div class="form-group"><label>Level</label><select id="clLevel"><option>O-Level</option><option>A-Level</option></select></div>
+                <div class="form-group"><label>Capacity</label><input type="number" id="clCapacity" value="40"></div>
+            `, `<button class="btn btn-secondary" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="submitClass()">Create</button>`);
+        }
+
+        async function submitClass() {
+            try {
+                await apiCall('/classes', { method: 'POST', body: JSON.stringify({ name: $('#clName').value, level: $('#clLevel').value, capacity: Number($('#clCapacity').value) }) });
+                closeModal();
+                showToast('Class created', 'success');
+                loadPage('classes');
+            } catch (e) { showToast(e.message, 'error'); }
+        }
+
+        async function createSubject() {
+            openModal('New Subject', `
+                <div class="form-group"><label>Name</label><input type="text" id="subName"></div>
+                <div class="form-group"><label>Code</label><input type="text" id="subCode"></div>
+            `, `<button class="btn btn-secondary" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="submitSubject()">Create</button>`);
+        }
+
+        async function submitSubject() {
+            try {
+                await apiCall('/subjects', { method: 'POST', body: JSON.stringify({ name: $('#subName').value, code: $('#subCode').value }) });
+                closeModal();
+                showToast('Subject created', 'success');
+                loadPage('classes');
+            } catch (e) { showToast(e.message, 'error'); }
+        }
+
+        // ===== ATTENDANCE =====
+        async function renderAttendance(c) {
+            const data = await apiCall('/attendance/overview').catch(() => ({}));
+            c.innerHTML = `
+                <div class="page-header"><h2>Attendance</h2><p>Today's attendance overview</p></div>
+                <div class="stats-grid">
+                    <div class="stat-card"><div class="stat-icon green"><i class="fas fa-check"></i></div><div class="stat-value">${data.present || 0}</div><div class="stat-label">Present</div></div>
+                    <div class="stat-card"><div class="stat-icon red"><i class="fas fa-times"></i></div><div class="stat-value">${data.absent || 0}</div><div class="stat-label">Absent</div></div>
+                    <div class="stat-card"><div class="stat-icon gold"><i class="fas fa-clock"></i></div><div class="stat-value">${data.late || 0}</div><div class="stat-label">Late</div></div>
+                    <div class="stat-card"><div class="stat-icon blue"><i class="fas fa-percent"></i></div><div class="stat-value">${data.rate || 0}%</div><div class="stat-label">Rate</div></div>
+                </div>`;
+        }
+
+        // ===== TIMETABLE =====
+        async function renderTimetable(c) {
+            c.innerHTML = `<div class="page-header"><h2>Timetable</h2><p>Class schedules</p></div><div class="card"><div class="empty-state">Timetable viewer coming soon</div></div>`;
+        }
+
+        // ===== EVENTS =====
+        async function renderEvents(c) {
+            const events = await apiCall('/events').catch(() => []);
+            c.innerHTML = `
+                <div class="page-header flex justify-between items-center"><div><h2>Events</h2><p>School calendar</p></div><button class="btn btn-primary" onclick="createEvent()"><i class="fas fa-plus"></i> New Event</button></div>
+                <div class="card"><div>${(events || []).map(e => `<div style="padding:16px;border-bottom:1px solid var(--border);"><div class="flex justify-between items-center"><strong>${escapeHtml(e.title)}</strong><span class="badge badge-info">${escapeHtml(e.event_type || 'event')}</span></div><div class="text-sm text-muted"><i class="fas fa-calendar"></i> ${new Date(e.start_date).toLocaleDateString()} • ${escapeHtml(e.location || '')}</div><p class="text-sm">${escapeHtml(e.description || '')}</p></div>`).join('') || '<div class="empty-state">No events</div>'}</div></div>`;
+        }
+
+        async function createEvent() {
+            openModal('New Event', `
+                <div class="form-group"><label>Title</label><input type="text" id="evTitle" required></div>
+                <div class="form-row">
+                    <div class="form-group"><label>Start Date</label><input type="datetime-local" id="evStart"></div>
+                    <div class="form-group"><label>End Date</label><input type="datetime-local" id="evEnd"></div>
+                </div>
+                <div class="form-group"><label>Location</label><input type="text" id="evLocation"></div>
+                <div class="form-group"><label>Description</label><textarea id="evDescription" rows="3"></textarea></div>
+            `, `<button class="btn btn-secondary" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="submitEvent()">Create</button>`);
+        }
+
+        async function submitEvent() {
+            const payload = { title: $('#evTitle').value, start_date: $('#evStart').value, end_date: $('#evEnd').value, location: $('#evLocation').value, description: $('#evDescription').value };
+            if (!payload.title || !payload.start_date) return showToast('Required fields missing', 'error');
+            try {
+                await apiCall('/events', { method: 'POST', body: JSON.stringify(payload) });
+                closeModal();
+                showToast('Event created', 'success');
+                loadPage('events');
+            } catch (e) { showToast(e.message, 'error'); }
+        }
+
+        // ===== ADMISSIONS =====
+        async function renderAdmissions(c) {
+            const apps = await apiCall('/admissions?status=pending').catch(() => []);
+            c.innerHTML = `
+                <div class="page-header"><h2>Admissions</h2><p>Pending applications</p></div>
+                <div class="card"><div class="table-wrapper"><table><thead><tr><th>Name</th><th>Class</th><th>Guardian</th><th>Date</th><th></th></tr></thead><tbody>${(apps || []).map(a => `
+                    <tr><td><strong>${escapeHtml(a.first_name + ' ' + a.last_name)}</strong></td><td>${escapeHtml(a.applying_for_class || '')}</td><td>${escapeHtml(a.guardian_name || '')}</td><td>${new Date(a.created_at).toLocaleDateString()}</td><td><button class="btn btn-sm btn-success" onclick="approveAdmission('${a.id}')"><i class="fas fa-check"></i></button> <button class="btn btn-sm btn-danger" onclick="rejectAdmission('${a.id}')"><i class="fas fa-times"></i></button></td></tr>`).join('') || '<tr><td colspan="5" class="empty-state">No pending applications</td></tr>'}</tbody></table></div></div>`;
+        }
+
+        async function approveAdmission(id) {
+            try {
+                await apiCall(`/admissions/${id}/approve`, { method: 'POST' });
+                showToast('Approved', 'success');
+                loadPage('admissions');
+            } catch (e) { showToast(e.message, 'error'); }
+        }
+
+        async function rejectAdmission(id) {
+            if (!confirm('Reject this application?')) return;
+            try {
+                await apiCall(`/admissions/${id}/reject`, { method: 'POST' });
+                showToast('Rejected', 'success');
+                loadPage('admissions');
+            } catch (e) { showToast(e.message, 'error'); }
+        }
+
+        // ===== SETTINGS =====
+        async function renderSettings(c) {
+            const settings = await apiCall('/settings').catch(() => ({}));
+            c.innerHTML = `
+                <div class="page-header"><h2>Settings</h2><p>School configuration</p></div>
+                <div class="card"><div class="form-group"><label>School Name</label><input type="text" id="setSchoolName" value="${escapeHtml(settings.school_name || 'Kalinabiri Secondary School')}"></div>
+                <div class="form-row"><div class="form-group"><label>Email</label><input type="email" id="setEmail" value="${escapeHtml(settings.school_email || 'Kalinabiri@yahoo.com')}"></div><div class="form-group"><label>Phone</label><input type="text" id="setPhone" value="${escapeHtml(settings.school_phone || '')}"></div></div>
+                <div class="form-group"><label>Address</label><textarea id="setAddress">${escapeHtml(settings.school_address || '')}</textarea></div>
+                <button class="btn btn-primary" onclick="saveSettings()"><i class="fas fa-save"></i> Save</button></div>`;
+        }
+
+        async function saveSettings() {
+            const payload = { school_name: $('#setSchoolName').value, school_email: $('#setEmail').value, school_phone: $('#setPhone').value, school_address: $('#setAddress').value };
+            try {
+                await apiCall('/settings', { method: 'PUT', body: JSON.stringify(payload) });
+                showToast('Settings saved', 'success');
+            } catch (e) { showToast(e.message, 'error'); }
+        }
+
+        // ===== PROFILE =====
+        async function renderProfile(c) {
+            c.innerHTML = `
+                <div class="page-header"><h2>Profile</h2><p>Your account</p></div>
+                <div class="card"><div class="form-row"><div class="form-group"><label>First Name</label><input type="text" id="pFirst" value="${escapeHtml(currentUser.first_name || '')}"></div><div class="form-group"><label>Last Name</label><input type="text" id="pLast" value="${escapeHtml(currentUser.last_name || '')}"></div></div>
+                <div class="form-group"><label>Email</label><input type="email" id="pEmail" value="${escapeHtml(currentUser.email || '')}"></div>
+                <button class="btn btn-primary" onclick="updateProfile()"><i class="fas fa-save"></i> Save</button></div>
+                <div class="card"><h3 class="card-title">Change Password</h3><div class="form-group"><label>Current</label><input type="password" id="pCurr"></div><div class="form-group"><label>New</label><input type="password" id="pNew"></div><button class="btn btn-primary" onclick="changePassword()">Change Password</button></div>`;
+        }
+
+        async function updateProfile() {
+            try {
+                await apiCall('/users/' + currentUser.id, { method: 'PUT', body: JSON.stringify({ first_name: $('#pFirst').value, last_name: $('#pLast').value, email: $('#pEmail').value }) });
+                showToast('Profile updated', 'success');
+            } catch (e) { showToast(e.message, 'error'); }
+        }
+
+        async function changePassword() {
+            try {
+                await apiCall('/auth/change-password', { method: 'POST', body: JSON.stringify({ current: $('#pCurr').value, new: $('#pNew').value }) });
+                showToast('Password changed', 'success');
+            } catch (e) { showToast(e.message, 'error'); }
+        }
+
+        // ===== NOTIFICATIONS =====
+        async function loadNotifications() {
+            try {
+                const notifs = await apiCall('/notifications?limit=10');
+                const list = $('#notifList');
+                if (notifs && notifs.length) {
+                    $('#notifBadge').textContent = notifs.filter(n => !n.is_read).length;
+                    $('#notifBadge').classList.toggle('hidden', !notifs.some(n => !n.is_read));
+                    list.innerHTML = notifs.map(n => `<div class="notification-item" onclick="handleNotifClick('${n.id}')"><div class="notification-title">${escapeHtml(n.title)}</div><div class="notification-time">${new Date(n.created_at).toLocaleString()}</div></div>`).join('');
+                } else {
+                    list.innerHTML = '<div class="notification-empty">No notifications</div>';
+                }
+            } catch (e) {}
+        }
+
+        function toggleNotifications() { $('#notifDropdown').classList.toggle('show'); }
+        async function handleNotifClick(id) { try { await apiCall(`/notifications/${id}/read`, { method: 'PUT' }); loadNotifications(); } catch(e){} }
+        async function markAllRead() { try { await apiCall('/notifications/read-all', { method: 'PUT' }); loadNotifications(); } catch(e){} }
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.notification-bell')) $('#notifDropdown')?.classList.remove('show');
+        });
+
+        // ===== MODAL =====
+        function openModal(title, body, footer) {
+            $('#modalTitle').textContent = title;
+            $('#modalBody').innerHTML = body;
+            $('#modalFooter').innerHTML = footer || '';
+            $('#modal').classList.remove('modal-lg', 'modal-xl');
+            $('#modalOverlay').classList.add('show');
+        }
+
+        function closeModal() { $('#modalOverlay').classList.remove('show'); }
+
+        // ===== GLOBAL SEARCH =====
+        async function handleGlobalSearch(e) {
+            if (e.key !== 'Enter') return;
+            const q = $('#globalSearch').value.trim();
+            if (!q) return;
+            try {
+                const results = await apiCall(`/search?q=${encodeURIComponent(q)}`);
+                openModal('Search Results', `<div>${(results.users || []).map(u => `<div style="padding:12px;border-bottom:1px solid var(--border);"><strong>${escapeHtml(u.first_name + ' ' + u.last_name)}</strong> <span class="badge badge-info">${u.role}</span></div>`).join('')}</div>`, `<button class="btn btn-secondary" onclick="closeModal()">Close</button>`);
+            } catch (e) { showToast(e.message, 'error'); }
+        }
+
+        // ===== SIDEBAR =====
+        function toggleSidebar() { $('#sidebar').classList.toggle('open'); }
+
+        // ===== INIT =====
+        if (TOKEN()) {
+            showDashboard();
+        }
+    </script>
+    <script src="/assets/js/theme-manager.js"></script>
+    <script src="/assets/js/theme-toolbar.js"></script>
+</body>
+</html>
